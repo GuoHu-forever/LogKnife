@@ -41,24 +41,19 @@ export class FilterItem extends vscode.TreeItem {
         this.iconPath = filter.iconPath;
         
 
-        if (filter.isHighlighted) {
-            if (filter.isShown) {
-                this.description = ` · ${filter.count}`;
-                this.contextValue = 'lit-visible';
-            } else {
-                this.description = '';
-                this.contextValue = 'lit-invisible';
-            }
+        if (filter.isShown) {
+            this.contextValue='shown';
+        
+            
         } else {
-            this.description = '';
-            if (filter.isShown) {
-                this.contextValue = 'unlit-visible';
-            } else {
-                this.contextValue = 'unlit-invisible';
-            }
+            this.contextValue='hiden';
+          
         }
+        console.log(this.contextValue);
+          
     }
 
+
     //contextValue connects to package.json>menus>view/item/context
-    contextValue: 'lit-visible' | 'unlit-visible' | 'lit-invisible' | 'unlit-invisible';
+   contextValue: 'shown' | 'hiden' ;
 }

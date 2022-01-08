@@ -1,9 +1,10 @@
 import * as vscode from "vscode";
 import { FilterTreeViewProvider } from "./filterTreeViewProvider";
 
+
 // One filter corresponds to one line in the configuration file
 export type Filter = {
-    isOpened: boolean; //if the matching lines will be kept in focus mode
+    isShown: boolean; 
     regex: RegExp;
     color: string;
     id: string; //random generated number
@@ -22,12 +23,12 @@ export function cleanUpIconFiles(storageUri: vscode.Uri) {
     });
 }
 
-//create an svg icon representing a filter: a filled circle if the filter is highlighted, or an empty circle otherwise.
+//create an svg icon representing a filter: a filled circle if the filter is shown, or an empty circle otherwise.
 //this icon gets stored in the file system at filter.iconPath.
 export function writeSvgContent(filter: Filter, treeViewProvider: FilterTreeViewProvider): void {
     const fullSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle fill="${filter.color}" cx="50" cy="50" r="50"/></svg>`;
     const emptySvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle stroke="${filter.color}" fill="transparent" stroke-width="10" cx="50" cy="50" r="45"/></svg>`;
-    vscode.workspace.fs.writeFile(filter.iconPath, str2Uint8(filter.isHighlighted ? fullSvg : emptySvg)).then(() => {
+    vscode.workspace.fs.writeFile(filter.iconPath, str2Uint8(filter.isShown ? fullSvg : emptySvg)).then(() => {
         console.log("before refresh");
         console.log(filter.iconPath);
         treeViewProvider.refresh();
@@ -44,6 +45,6 @@ function str2Uint8(str: string): Uint8Array {
     return bufView;
 }
 
-export function generateSvgUri(storageUri: vscode.Uri, id: string, isHighlighted: boolean): vscode.Uri {
-    return vscode.Uri.joinPath(storageUri, `./${id}${isHighlighted}.svg`);
+export function generateSvgUri(storageUri: vscode.Uri, id: string, isShown: boolean): vscode.Uri {
+    return vscode.Uri.joinPath(storageUri, `./${id}${isShown}.svg`);
 }

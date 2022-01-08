@@ -1,6 +1,6 @@
 {
-  "name": "logKnife",
-	"displayName": "LogKnife",
+  "name": "log-knife",
+	"displayName": "log-knife",
 	"description": "a stronger log viewer",
 	"version": "0.0.1",
 	"engines": {
@@ -10,21 +10,125 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:logKnife.helloWorld"
+       "onStartupFinished"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "logKnife.helloWorld",
-				"title": "Hello World"
+				"command": "log-knife.enableFilter",
+				"title": "Enable Filter",
+				"icon": "$(eye)"
+			},
+			{
+				"command": "log-knife.disableFilter",
+				"title": "Disable Filter",
+				"icon": "$(eye-closed)"
+			},
+		
+			{
+				"command": "log-knife.deleteFilter",
+				"title": "Delete This Filter",
+				"icon": "$(dialog-close)"
+			},
+			{
+				"command": "log-knife.editFilter",
+				"title": "Edit Regex for This Filter", 
+				"icon": "$(edit)"
+			},
+			{
+				"command": "log-knife.addFilter",
+				"title": "Add a Filter",
+				"icon": "$(plus)"
+			},
+			{
+				"command": "log-knife.exportFilters",
+				"title": "Export Filters"
+			},
+			{
+				"command": "log-knife.importFilters",
+				"title": "Import Filters"
+			},
+			{
+				"command": "log-knife.searchRegexCase",
+				"title": "search",
+				"icon":  "$(search)"
+			},
+			{
+				"command": "log-knife.viewResult",
+				"title": "result"
+			
 			}
 		],
+		"menus": {
+			"view/item/context": [ 
+				{
+					"command": "log-knife.editFilter",
+					"when": "view == log-knife-view",
+					"group": "inline@1"
+				},
+				{
+					"command": "log-knife.disableFilter",
+					"when": "view == log-knife-view && viewItem==shown",
+					"group": "inline@2"
+				},
+				{
+					"command": "log-knife.enableFilter",
+					"when": "view == log-knife-view && viewItem ==hiden",
+					"group": "inline@3"
+				},
+		
+				{
+					"command": "log-knife.deleteFilter",
+					"when": "view == log-knife-view",
+					"group": "inline@6"
+				}
+			],
+			"view/title": [
+				{
+					"command": "log-knife.addFilter",
+					"when": "view == log-knife-view",
+					"group": "navigation"
+				},
+	
+				{
+					"command": "log-knife.importFilters",
+					"when": "view == log-knife-view"
+				},
+				{
+					"command": "log-knife.exportFilters",
+					"when": "view == log-knife-view"
+				},
+				{
+					"command": "log-knife.searchRegexCase",
+					"when": "view == log-knife-view",
+					"group": "navigation"
+				}
+			]
+
+		},
+		"viewsContainers": {
+			"panel": [
+				{
+					"id": "searchContainer",
+					"title": "Log Knife Search Result",
+					"icon": "$(eye)"
+				}
+			]
+		},
 		"views": {
 			"explorer": [
 				{
-					"id":"filters",
-					"name":"Filters"
+					"id":"log-knife-view",
+					"name":"Log Knife"
+				}
+			],
+			"searchContainer":[
+
+				{
+					"id":"searchView",
+					"name": "LogKnifeResult"
+
 				}
 			]
 		}
