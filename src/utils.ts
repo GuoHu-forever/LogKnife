@@ -48,3 +48,12 @@ function str2Uint8(str: string): Uint8Array {
 export function generateSvgUri(storageUri: vscode.Uri, id: string, isShown: boolean): vscode.Uri {
     return vscode.Uri.joinPath(storageUri, `./${id}${isShown}.svg`);
 }
+export const getActiveDocument = (): vscode.TextDocument | undefined => {
+	// Make sure there is an active editor window for us to use
+	if (typeof vscode.window.activeTextEditor === "undefined") {
+		return undefined;
+	}
+
+	// Get the active document
+	return vscode.window.activeTextEditor.document;
+};

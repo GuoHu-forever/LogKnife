@@ -55,9 +55,15 @@
 				"icon":  "$(search)"
 			},
 			{
-				"command": "log-knife.viewResult",
-				"title": "result"
+				"command": "log-knife.searchWebView",
+				"title": "result",
+				"icon":  "$(search)"
 			
+			},
+			{
+				"command": "log-knife.debug",
+				"title": "debug",
+				"icon":"$(edit)"
 			}
 		],
 		"menus": {
@@ -100,8 +106,18 @@
 					"when": "view == log-knife-view"
 				},
 				{
-					"command": "log-knife.searchRegexCase",
+					"command": "log-knife.searchWebView",
 					"when": "view == log-knife-view",
+					"group": "navigation"
+				},
+				{
+					"command": "log-knife.searchWebView",
+					"when": "view == searchWebView",
+					"group": "navigation"
+				},
+				{	
+					"command": "log-knife.debug",
+					"when": "view == searchWebView",
 					"group": "navigation"
 				}
 			]
@@ -110,7 +126,7 @@
 		"viewsContainers": {
 			"panel": [
 				{
-					"id": "searchContainer",
+					"id": "searchWebViewContainer",
 					"title": "Log Knife Search Result",
 					"icon": "$(eye)"
 				}
@@ -123,14 +139,16 @@
 					"name":"Log Knife"
 				}
 			],
-			"searchContainer":[
+			"searchWebViewContainer":[
 
 				{
-					"id":"searchView",
+					"id":"searchWebView",
+					"type": "webview",
 					"name": "LogKnifeResult"
 
 				}
 			]
+
 		}
 	},
 	"scripts": {

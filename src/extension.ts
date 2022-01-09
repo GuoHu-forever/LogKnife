@@ -2,11 +2,12 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { FilterTreeViewProvider } from "./filterTreeViewProvider";
-import { Filter, cleanUpIconFiles } from "./utils";
-import {deleteFilter, setShownOrHiden,importFilters, exportFilters, addFilter, editFilter, refresFilterTreeView } from "./commands";
+import { Filter, cleanUpIconFiles,getActiveDocument} from "./utils";
+import {deleteFilter, setShownOrHiden,importFilters, exportFilters, addFilter, editFilter, refresFilterTreeView } from "./filterCommands";
+import {SearchWebViewProvider} from "./searchWebViewProvider";
+
 let storageUri: vscode.Uri;
 import { SearchTreeViewProvider } from './searchTreeViewProvider';
-import { ResultItem,searchFilters,viewResult } from './searchCommands';
 export type State = {
     filterArr: Filter[];
     filterTreeViewProvider: FilterTreeViewProvider;
@@ -91,44 +92,80 @@ export function activate(context: vscode.ExtensionContext) {
 
 	//search view
 	//searview
-const getActiveDocument = (): vscode.TextDocument | undefined => {
-	// Make sure there is an active editor window for us to use
-	if (typeof vscode.window.activeTextEditor === "undefined") {
-		return undefined;
-	}
+// const getActiveDocument = (): vscode.TextDocument | undefined => {
+// 	// Make sure there is an active editor window for us to use
+// 	if (typeof vscode.window.activeTextEditor === "undefined") {
+// 		return undefined;
+// 	}
 
-	// Get the active document
-	return vscode.window.activeTextEditor.document;
-};
+// 	// Get the active document
+// 	return vscode.window.activeTextEditor.document;
+// };
 
-const createTreeView = (provider: SearchTreeViewProvider): vscode.TreeView<ResultItem> => {
-	const treeViewOptions: vscode.TreeViewOptions<ResultItem> = {
-		showCollapseAll: false,
-		treeDataProvider: provider,
-	};
+// const createTreeView = (provider: SearchTreeViewProvider): vscode.TreeView<ResultItem> => {
+// 	const treeViewOptions: vscode.TreeViewOptions<ResultItem> = {
+// 		showCollapseAll: false,
+// 		treeDataProvider: provider,
+// 	};
 
-	return vscode.window.createTreeView("searchView", treeViewOptions);
-};
-
-
-
-const searchRegexCase=():void=>{
-	let doc:vscode.TextDocument|undefined=getActiveDocument();
-	let results:ResultItem[]|undefined=searchFilters(doc,state.filterArr);
-	if(results==undefined)
-	     return;
-	const provider: SearchTreeViewProvider = new SearchTreeViewProvider(results,doc);
-	const treeView: vscode.TreeView<ResultItem> = createTreeView(provider);
-	treeView.reveal(results[0], { expand: true, focus: true, select: false }).then(
-					() => {},
-					() => {}
-				);
-
-}
+// 	return vscode.window.createTreeView("searchView", treeViewOptions);
+// };
 
 
-context.subscriptions.push(vscode.commands.registerCommand("log-knife.searchRegexCase", searchRegexCase));
-context.subscriptions.push(vscode.commands.registerCommand("log-knife.viewResult", viewResult));
+
+// const searchRegexCase=():void=>{
+// 	let doc:vscode.TextDocument|undefined=getActiveDocument();
+// 	let results:ResultItem[]|undefined=searchFilters(doc,state.filterArr);
+// 	if(results==undefined)
+// 	     return;
+// 	const provider: SearchTreeViewProvider = new SearchTreeViewProvider(results,doc);
+// 	const treeView: vscode.TreeView<ResultItem> = createTreeView(provider);
+// 	treeView.reveal(results[0], { expand: true, focus: true, select: false }).then(
+// 					() => {},
+// 					() => {}
+// 				);
+
+// }
+
+
+// context.subscriptions.push(vscode.commands.registerCommand("log-knife.searchRegexCase", searchRegexCase));
+// context.subscriptions.push(vscode.commands.registerCommand("log-knife.viewResult", viewResult));
+
+
+//web view
+
+    
+const provider = new SearchWebViewProvider(context.extensionUri);
+
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider('searchWebView', provider));
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand('log-knife.searchWebView', () => {
+			let doc:vscode.TextDocument|undefined=getActiveDocument();
+            if(typeof doc ===undefined){
+	           return ;
+             }
+            doc=doc as vscode.TextDocument;
+			provider.webViewSearchFilters(doc,state.filterArr);
+		}));
+
+		
+		context.subscriptions.push(
+			vscode.commands.registerCommand('log-knife.debug',()=>{
+                    
+				if (typeof vscode.window.activeTextEditor !== "undefined") {
+					// Make the result visible
+					console.log(vscode.window.activeTextEditor);
+					
+					vscode.window.activeTextEditor.revealRange(new vscode.Range(1, 0, 1, 2));
+			
+					// Select the result
+					vscode.window.activeTextEditor.selection = new vscode.Selection(1, 0, 1, 2);
+				}
+			
+			})
+		);
 
 
 
