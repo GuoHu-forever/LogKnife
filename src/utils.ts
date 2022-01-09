@@ -11,6 +11,7 @@ export type Filter = {
     iconPath: vscode.Uri; //point to the isHighlighted/isNotHighlighted svg icon in the file system
 };
 
+
 export function generateRandomColor(): string {
     return `hsl(${Math.floor(360 * Math.random())}, 40%, 40%)`;
 }
@@ -46,6 +47,7 @@ function str2Uint8(str: string): Uint8Array {
 }
 
 export function generateSvgUri(storageUri: vscode.Uri, id: string, isShown: boolean): vscode.Uri {
+    //forexample C:\Users\AlanGuo666\AppData\Roaming\Code\User\globalStorage\undefined_publisher.log-knife/0.4490539887309699true.svg
     return vscode.Uri.joinPath(storageUri, `./${id}${isShown}.svg`);
 }
 export const getActiveDocument = (): vscode.TextDocument | undefined => {

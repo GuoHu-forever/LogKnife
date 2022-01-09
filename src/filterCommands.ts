@@ -4,15 +4,21 @@ import { generateSvgUri, writeSvgContent, generateRandomColor } from "./utils";
 
 export function deleteFilter(filterTreeItem: vscode.TreeItem, state: State) {
     const deleteIndex = state.filterArr.findIndex(filter => (filter.id === filterTreeItem.id));
+    const filter=state.filterArr[deleteIndex];
     state.filterArr.splice(deleteIndex, 1);
-    refresFilterTreeView(state);
+    vscode.workspace.fs.delete(filter.iconPath).then(()=>{
+        console.log("delete icon file:");
+        
+        refresFilterTreeView(state);
+
+    });
 }
 
 export function addFilter(state: State) {
     vscode.window.showInputBox({
         prompt: "Type a regex to filter",
         ignoreFocusOut: false
-    }).then(regexStr => {
+    }).then(async regexStr => {
         if (regexStr === undefined) {
             return;
         }
@@ -27,8 +33,8 @@ export function addFilter(state: State) {
         };
         state.filterArr.push(filter);
         //the order of the following two lines is deliberate (due to some unknown reason of async dependencies...)
-        writeSvgContent(filter, state.filterTreeViewProvider);
-        refresFilterTreeView(state);
+         writeSvgContent(filter, state.filterTreeViewProvider);
+        //refresFilterTreeView(state);
     });
 }
 
@@ -52,7 +58,6 @@ export function exportFilters(state: State) {
         return {
             regexText: filter.regex.source,
             color: filter.color,
-            isHighlighted: filter.isShown,
             isShown: filter.isShown,
         };
     }));
@@ -85,18 +90,15 @@ export function importFilters(state: State) {
                 if (
                     (typeof filterText.regexText === "string") &&
                     (typeof filterText.color === "string") &&
-                    (typeof filterText.isHighlighted === "boolean") &&
                     (typeof filterText.isShown === "boolean")
                 ) {
                     const id = `${Math.random()}`;
                     const filter = {
                         regex: new RegExp(filterText.regexText),
                         color: filterText.color as string,
-                        isHighlighted: filterText.isHighlighted as boolean,
                         isShown: filterText.isShown as boolean,
                         id,
                         iconPath: generateSvgUri(state.storageUri, id, filterText.isShown),
-                        count: 0
                     };
                     state.filterArr.push(filter);
                     writeSvgContent(filter, state.filterTreeViewProvider);
@@ -118,4 +120,5 @@ export function setShownOrHiden(isShown: boolean, filterTreeItem: vscode.TreeIte
 export function refresFilterTreeView(state: State) {
    
     state.filterTreeViewProvider.refresh();
+
 }
