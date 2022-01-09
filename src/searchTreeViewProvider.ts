@@ -37,8 +37,7 @@ private itemFromResult(element:ResultItem):vscode.TreeItem{
             const label:vscode.TreeItemLabel={highlights:[highlight],label:element.text};
             const treeItem:vscode.TreeItem=new vscode.TreeItem(label);
             treeItem.tooltip=element.toMarkdown();
-            const args:any[]=[this.doc,element.lineBegin,element.columnBegin,element.lineEnd,element.columnEnd]
-            treeItem.command = {
+            const args:any[]=[this.doc,element.lineBegin,element.columnBegin,element.lineEnd,element.columnEnd];            treeItem.command = {
 				arguments: args,
 				command: "log-knife.viewResult",
 				title: "",

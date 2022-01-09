@@ -95,26 +95,31 @@ const provider = new SearchWebViewProvider(context.extensionUri);
 	context.subscriptions.push(
 		vscode.commands.registerCommand('log-knife.searchWebView', () => {
 			let doc:vscode.TextDocument|undefined=getActiveDocument();
-            if(typeof doc ===undefined){
+            if( doc === undefined){
+                vscode.window.showErrorMessage("vs限制插件使用大文件，请ctrl+c复制一份到新的tab中绕过该限制");
+              
 	           return ;
              }
             doc=doc as vscode.TextDocument;
 			provider.webViewSearchFilters(doc,state.filterArr);
 		}));
 
-		
+ //just for debug----------------------------------------------------------------------------------------
 		context.subscriptions.push(
 			vscode.commands.registerCommand('log-knife.debug',()=>{
-                    
-				if (typeof vscode.window.activeTextEditor !== "undefined") {
-					// Make the result visible
-					console.log(vscode.window.activeTextEditor);
-					
-					vscode.window.activeTextEditor.revealRange(new vscode.Range(1, 0, 1, 2));
-			
-					// Select the result
-					vscode.window.activeTextEditor.selection = new vscode.Selection(1, 0, 1, 2);
-				}
+                console.log("开始debug----------------------------------------------");
+                var editor = vscode.window.activeTextEditor;
+                console.log("editor: "+editor);
+                //vscode.window.showErrorMessage("Please open any Text in Editor or check that log file is not to big");
+              
+                var docs=vscode.workspace.textDocuments;
+                for(var i=0;i<docs.length;i++){
+                    console.log(docs[i].fileName);
+                }
+			    
+
+
+
 			
 			})
 		);
@@ -126,4 +131,6 @@ const provider = new SearchWebViewProvider(context.extensionUri);
 
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+
+}

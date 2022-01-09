@@ -22,6 +22,10 @@
         }
     });
     function viewResultByCache(results){
+        if(!results){
+            return;
+        }
+    
         var container=document.getElementById('container');
         container.innerHTML="";
         for(var i=0;i<results.length;i++){

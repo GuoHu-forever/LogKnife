@@ -31,7 +31,6 @@ export class SearchWebViewProvider implements vscode.WebviewViewProvider {
 				this._extensionUri
 			]
 		};
-		
 
 		webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
@@ -76,11 +75,11 @@ export class SearchWebViewProvider implements vscode.WebviewViewProvider {
 	}
     public webViewSearchFilters(doc: vscode.TextDocument | undefined,filters:Filter[]){
 		console.log("webViewSearchFilters");
-		console.log(filters);
+		console.log("fiters:  "+filters);
 		this._doc=doc;
 		
         this._results=searchFilters(doc,filters);
-		console.log(this._results);
+		console.log("results: "+this._results);
 		
         if(typeof this._results===undefined){
 			return;
