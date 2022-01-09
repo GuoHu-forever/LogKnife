@@ -8,6 +8,7 @@ export class SearchWebViewProvider implements vscode.WebviewViewProvider {
 	private _view?: vscode.WebviewView;
     private _results?:ResultItem[];
 	private _doc?:vscode.TextDocument;
+	private _readCache:boolean=true;
 
 	constructor(
 		private readonly _extensionUri: vscode.Uri,
@@ -26,11 +27,11 @@ export class SearchWebViewProvider implements vscode.WebviewViewProvider {
 		webviewView.webview.options = {
 			// Allow scripts in the webview
 			enableScripts: true,
-
 			localResourceRoots: [
 				this._extensionUri
 			]
 		};
+		
 
 		webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
@@ -86,6 +87,7 @@ export class SearchWebViewProvider implements vscode.WebviewViewProvider {
 		}
 	       
         this.viewResult();
+	
 
     }
     
