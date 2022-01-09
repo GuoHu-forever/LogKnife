@@ -1,182 +1,173 @@
 {
   "name": "log-knife",
-	"displayName": "Log Knife",
-	"description": "a good log viewer",
-	"publisher":"guohu",
-	"version": "0.0.1",
-	"engines": {
-		"vscode": "^1.63.0"
-		
-	},
-	"icon": "knife.png",
-	"repository": {
-		"type": "git",
-		"url":"https://github.com/GuoHu-forever/LogKnife.git"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-       "onStartupFinished"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "log-knife.enableFilter",
-				"title": "Enable Filter",
-				"icon": "$(eye)"
-			},
-			{
-				"command": "log-knife.disableFilter",
-				"title": "Disable Filter",
-				"icon": "$(eye-closed)"
-			},
-		
-			{
-				"command": "log-knife.deleteFilter",
-				"title": "Delete This Filter",
-				"icon": "$(dialog-close)"
-			},
-			{
-				"command": "log-knife.editFilter",
-				"title": "Edit Regex for This Filter", 
-				"icon": "$(edit)"
-			},
-			{
-				"command": "log-knife.addFilter",
-				"title": "Add a Filter",
-				"icon": "$(plus)"
-			},
-			{
-				"command": "log-knife.exportFilters",
-				"title": "Export Filters"
-			},
-			{
-				"command": "log-knife.importFilters",
-				"title": "Import Filters"
-			},
-			{
-				"command": "log-knife.searchRegexCase",
-				"title": "search",
-				"icon":  "$(search)"
-			},
-			{
-				"command": "log-knife.searchWebView",
-				"title": "result",
-				"icon":  "$(search)"
-			
-			},
-			{
-				"command": "log-knife.debug",
-				"title": "debug",
-				"icon":"$(edit)"
-			}
-		],
-		"menus": {
-			"view/item/context": [ 
-				{
-					"command": "log-knife.editFilter",
-					"when": "view == log-knife-view",
-					"group": "inline@1"
-				},
-				{
-					"command": "log-knife.disableFilter",
-					"when": "view == log-knife-view && viewItem==shown",
-					"group": "inline@2"
-				},
-				{
-					"command": "log-knife.enableFilter",
-					"when": "view == log-knife-view && viewItem ==hiden",
-					"group": "inline@3"
-				},
-		
-				{
-					"command": "log-knife.deleteFilter",
-					"when": "view == log-knife-view",
-					"group": "inline@6"
-				}
-			],
-			"view/title": [
-				{
-					"command": "log-knife.addFilter",
-					"when": "view == log-knife-view",
-					"group": "navigation"
-				},
-	
-				{
-					"command": "log-knife.importFilters",
-					"when": "view == log-knife-view"
-				},
-				{
-					"command": "log-knife.exportFilters",
-					"when": "view == log-knife-view"
-				},
-				{
-					"command": "log-knife.searchWebView",
-					"when": "view == log-knife-view",
-					"group": "navigation"
-				},
-				{
-					"command": "log-knife.searchWebView",
-					"when": "view == searchWebView",
-					"group": "navigation"
-				},
-				{	
-					"command": "log-knife.debug",
-					"when": "view == searchWebView",
-					"group": "navigation"
-				}
-			]
-
-		},
-		"viewsContainers": {
-			"panel": [
-				{
-					"id": "searchWebViewContainer",
-					"title": "Log Knife Search Result",
-					"icon": "$(eye)"
-				}
-			]
-		},
-		"views": {
-			"explorer": [
-				{
-					"id":"log-knife-view",
-					"name":"Log Knife"
-				}
-			],
-			"searchWebViewContainer":[
-
-				{
-					"id":"searchWebView",
-					"type": "webview",
-					"name": "LogKnifeResult"
-
-				}
-			]
-
-		}
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile && npm run lint",
-		"lint": "eslint src --ext ts",
-		"test": "node ./out/test/runTest.js"
-	},
-	"devDependencies": {
-		"@types/vscode": "^1.63.0",
-		"@types/glob": "^7.1.4",
-		"@types/mocha": "^9.0.0",
-		"@types/node": "14.x",
-		"@typescript-eslint/eslint-plugin": "^5.1.0",
-		"@typescript-eslint/parser": "^5.1.0",
-		"eslint": "^8.1.0",
-		"glob": "^7.1.7",
-		"mocha": "^9.1.3",
-		"typescript": "^4.4.4",
-		"@vscode/test-electron": "^1.6.2"
-	}
+  "displayName": "Log Knife",
+  "description": "a good log viewer",
+  "publisher": "guohu",
+  "version": "0.0.2",
+  "engines": {
+    "vscode": "^1.63.0"
+  },
+  "icon": "knife.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GuoHu-forever/LogKnife.git"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "log-knife.enableFilter",
+        "title": "Enable Filter",
+        "icon": "$(eye)"
+      },
+      {
+        "command": "log-knife.disableFilter",
+        "title": "Disable Filter",
+        "icon": "$(eye-closed)"
+      },
+      {
+        "command": "log-knife.deleteFilter",
+        "title": "Delete This Filter",
+        "icon": "$(dialog-close)"
+      },
+      {
+        "command": "log-knife.editFilter",
+        "title": "Edit Regex for This Filter",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "log-knife.addFilter",
+        "title": "Add a Filter",
+        "icon": "$(plus)"
+      },
+      {
+        "command": "log-knife.exportFilters",
+        "title": "Export Filters"
+      },
+      {
+        "command": "log-knife.importFilters",
+        "title": "Import Filters"
+      },
+      {
+        "command": "log-knife.searchRegexCase",
+        "title": "search",
+        "icon": "$(search)"
+      },
+      {
+        "command": "log-knife.searchWebView",
+        "title": "result",
+        "icon": "$(search)"
+      },
+      {
+        "command": "log-knife.debug",
+        "title": "debug",
+        "icon": "$(edit)"
+      }
+    ],
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "log-knife.editFilter",
+          "when": "view == log-knife-view",
+          "group": "inline@1"
+        },
+        {
+          "command": "log-knife.disableFilter",
+          "when": "view == log-knife-view && viewItem==shown",
+          "group": "inline@2"
+        },
+        {
+          "command": "log-knife.enableFilter",
+          "when": "view == log-knife-view && viewItem ==hiden",
+          "group": "inline@3"
+        },
+        {
+          "command": "log-knife.deleteFilter",
+          "when": "view == log-knife-view",
+          "group": "inline@6"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "log-knife.addFilter",
+          "when": "view == log-knife-view",
+          "group": "navigation"
+        },
+        {
+          "command": "log-knife.importFilters",
+          "when": "view == log-knife-view"
+        },
+        {
+          "command": "log-knife.exportFilters",
+          "when": "view == log-knife-view"
+        },
+        {
+          "command": "log-knife.searchWebView",
+          "when": "view == log-knife-view",
+          "group": "navigation"
+        },
+        {
+          "command": "log-knife.searchWebView",
+          "when": "view == searchWebView",
+          "group": "navigation"
+        },
+        {
+          "command": "log-knife.debug",
+          "when": "view == searchWebView",
+          "group": "navigation"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "panel": [
+        {
+          "id": "searchWebViewContainer",
+          "title": "Log Knife Search Result",
+          "icon": "$(eye)"
+        }
+      ]
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "log-knife-view",
+          "name": "Log Knife"
+        }
+      ],
+      "searchWebViewContainer": [
+        {
+          "id": "searchWebView",
+          "type": "webview",
+          "name": "LogKnifeResult"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.63.0",
+    "@types/glob": "^7.1.4",
+    "@types/mocha": "^9.0.0",
+    "@types/node": "14.x",
+    "@typescript-eslint/eslint-plugin": "^5.1.0",
+    "@typescript-eslint/parser": "^5.1.0",
+    "eslint": "^8.1.0",
+    "glob": "^7.1.7",
+    "mocha": "^9.1.3",
+    "typescript": "^4.4.4",
+    "@vscode/test-electron": "^1.6.2"
+  }
 }
