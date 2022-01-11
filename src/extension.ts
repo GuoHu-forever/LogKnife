@@ -4,6 +4,7 @@ import { FilterTreeViewProvider } from "./filterTreeViewProvider";
 import { Filter, cleanUpIconFiles,getActiveDocument} from "./utils";
 import {deleteFilter, setShownOrHiden,importFilters, exportFilters, addFilter, editFilter, refresFilterTreeView } from "./filterCommands";
 import {SearchWebViewProvider} from "./searchWebViewProvider";
+import {VSColorPicker} from "./debug";
 //Extension storge position
 let storageUri: vscode.Uri;
 import { SearchTreeViewProvider } from './searchTreeViewProvider';
@@ -108,15 +109,9 @@ const provider = new SearchWebViewProvider(context.extensionUri);
 		context.subscriptions.push(
 			vscode.commands.registerCommand('log-knife.debug',()=>{
                 console.log("开始debug----------------------------------------------");
-                var editor = vscode.window.activeTextEditor;
-                console.log("editor: "+editor);
-                //vscode.window.showErrorMessage("Please open any Text in Editor or check that log file is not to big");
-              
-                var docs=vscode.workspace.textDocuments;
-                for(var i=0;i<docs.length;i++){
-                    console.log(docs[i].fileName);
-                }
-			    
+                
+                let picker = new VSColorPicker(context.extensionUri.fsPath);
+                picker.LaunchColorPickerWindow("red");
 
 
 
@@ -127,6 +122,7 @@ const provider = new SearchWebViewProvider(context.extensionUri);
 
 
 }
+
 
 
 
