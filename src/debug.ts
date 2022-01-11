@@ -1,22 +1,29 @@
 'use strict';
 import * as VSCode from 'vscode';
-import * as Process from 'child_process'
+import * as Process from 'child_process';
 export class VSColorPicker {
-    private _config = { autoLaunch: true, autoLaunchDelay: 100 };
-    constructor(private _extensionPath: string) {
-        let configSection = VSCode.workspace.getConfiguration('vs-color-picker');
 
-        this._config.autoLaunch = configSection.get<boolean>('autoLaunch', this._config.autoLaunch);
-        this._config.autoLaunchDelay = configSection.get<number>('autoLaunchDelay', this._config.autoLaunchDelay);
+    constructor(private _extensionPath: string) {
+       
     }
 
    
-    public LaunchColorPickerWindow(orignalColor: string): void {
-        Process.exec(`ColorPicker.exe ${orignalColor}`, { cwd: this._extensionPath },
+    public LaunchColorPickerWindow(): void {
+        Process.exec(`java ColorPicker`, { cwd: this._extensionPath },
         (error: Process.ExecException | null, stdout: string | Buffer, stderr: string | Buffer) => {
-                if (stdout.length == 0) {
+            if(stdout){
+                if (stdout[0] === "-") {
+                    console.log("调取颜色面板失败");
                     return;
+
+                 }
+                else{
+                    console.log("颜色选取成功"+stdout);
+                    
                 }
+            }else{
+                console.log("程序执行失败");
+            }
                
             });
     }

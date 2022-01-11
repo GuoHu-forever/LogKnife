@@ -64,6 +64,13 @@
         "title": "result",
         "icon": "$(search)"
       },
+     
+      {
+        "command": "log-knife.editColor",
+        "title": "edit color",
+        "icon":"$(color-mode)"
+         
+      },
       {
         "command": "log-knife.debug",
         "title": "debug",
@@ -91,6 +98,11 @@
           "command": "log-knife.deleteFilter",
           "when": "view == log-knife-view",
           "group": "inline@6"
+        },
+        {
+          "command": "log-knife.editColor",
+          "when": "view==log-knife-view",
+          "group": "inline@0"
         }
       ],
       "view/title": [
@@ -150,9 +162,9 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
+    "vscode:prepublish": "javac ColorPicker.java && npm run compile",
+    "compile": "javac ColorPicker.java &&tsc -p ./",
+    "watch": "javac ColorPicker.java &&tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"

@@ -117,6 +117,16 @@ export function setShownOrHiden(isShown: boolean, filterTreeItem: vscode.TreeIte
     writeSvgContent(filter!, state.filterTreeViewProvider);
 }
 
+export function editColor(filterTreeItem: vscode.TreeItem, state: State,color:string){
+    const id = filterTreeItem.id;
+    const filter = state.filterArr.find(filter => (filter.id === id));
+    filter!.color=color;
+    writeSvgContent(filter!, state.filterTreeViewProvider);
+    refresFilterTreeView(state);
+   
+
+}
+
 export function refresFilterTreeView(state: State) {
    
     state.filterTreeViewProvider.refresh();
