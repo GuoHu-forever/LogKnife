@@ -49,6 +49,7 @@ export class SearchWebViewProvider implements vscode.WebviewViewProvider {
         
      // Get the local path to main script run in the webview, then convert it to a uri we can use in the webview.
 		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'js', 'main.js'));
+
         return `<!DOCTYPE html>
 			<html lang="en">
 			<head>
@@ -57,16 +58,15 @@ export class SearchWebViewProvider implements vscode.WebviewViewProvider {
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				
 				<title>Log Knife</title>
-                <style>
-                    p{
-                    /* background-color:rgb(202, 30, 30);*/
-                        color: red;
-                        margin:0px auto;
-                    }
-                    body{
-                        overflow:auto;
-                    }
-                </style>
+				<style>
+				*{
+					font-family:-moz-fixed;
+					white-space:pre;
+					margin:4px;
+					font-size:14px;
+
+		          } 
+				  </style>       
 			</head>
 			<body id="container">
 				<script  src="${scriptUri}"></script>

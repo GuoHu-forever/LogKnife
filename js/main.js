@@ -29,12 +29,13 @@
         var container=document.getElementById('container');
         container.innerHTML="";
         for(var i=0;i<results.length;i++){
-            var p=document.createElement("p");
-            p.innerHTML=results[i].text;
+            var p=document.createElement("div");
+            p.innerHTML=results[i].text+"\n";
             p.style.color=results[i].color;
             p.setAttribute("line",results[i].lineBegin.toString());
             p.setAttribute("columnEnd",results[i].columnEnd.toString());
             p.setAttribute("id",i.toString());
+
             container.appendChild(p);
         } 
          document.getElementById('container').addEventListener('dblclick',function(event){
@@ -47,8 +48,8 @@
         var container=document.getElementById('container');
         container.innerHTML="";
         for(var i=0;i<results.length;i++){
-            var p=document.createElement("p");
-            p.innerHTML=results[i].text;
+            var p=document.createElement("div");
+            p.innerHTML=results[i].text+"\n";;
             p.style.color=results[i].color;
             p.setAttribute("line",results[i].lineBegin.toString());
             p.setAttribute("columnEnd",results[i].columnEnd.toString());
