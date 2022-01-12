@@ -121,8 +121,9 @@ export function editColor(filterTreeItem: vscode.TreeItem, state: State,color:st
     const id = filterTreeItem.id;
     const filter = state.filterArr.find(filter => (filter.id === id));
     filter!.color=color;
+    
     writeSvgContent(filter!, state.filterTreeViewProvider);
-    refresFilterTreeView(state);
+
    
 
 }

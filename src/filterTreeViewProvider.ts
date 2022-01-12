@@ -49,7 +49,7 @@ export class FilterItem extends vscode.TreeItem {
             this.contextValue='hiden';
           
         }
-        console.log(this.contextValue);
+        console.log("filter state change to :"+this.contextValue);
           
     }
 

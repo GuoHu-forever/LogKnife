@@ -30,11 +30,12 @@
         container.innerHTML="";
         for(var i=0;i<results.length;i++){
             var p=document.createElement("div");
-            p.innerHTML=results[i].text+"\n";
+            var lineNumberNodeStr="<span style='color:blue'>"+(results[i].lineBegin+1)+"</span>";
+            p.innerHTML=lineNumberNodeStr+"<span id="+i+">"+results[i].text+"\n"+"</span>";
             p.style.color=results[i].color;
             p.setAttribute("line",results[i].lineBegin.toString());
             p.setAttribute("columnEnd",results[i].columnEnd.toString());
-            p.setAttribute("id",i.toString());
+            //p.setAttribute("id",i.toString());
 
             container.appendChild(p);
         } 
@@ -49,11 +50,12 @@
         container.innerHTML="";
         for(var i=0;i<results.length;i++){
             var p=document.createElement("div");
-            p.innerHTML=results[i].text+"\n";;
+            var lineNumberNodeStr="<span style='color:blue'>"+(results[i].lineBegin+1)+"</span>";
+            p.innerHTML=lineNumberNodeStr+"<span id="+i+">"+results[i].text+"\n"+"</span>";
             p.style.color=results[i].color;
             p.setAttribute("line",results[i].lineBegin.toString());
             p.setAttribute("columnEnd",results[i].columnEnd.toString());
-            p.setAttribute("id",i.toString());
+            //p.setAttribute("id",i.toString());
             container.appendChild(p);
         } 
          document.getElementById('container').addEventListener('dblclick',function(event){
@@ -62,9 +64,11 @@
 
     }
     function jump(dom){
+        var p=dom.parentNode;
+        
        var value={
-           line:parseInt(dom.getAttribute("line")),
-           columnEnd:parseInt(dom.getAttribute("columnEnd"))
+           line:parseInt(p.getAttribute("line")),
+           columnEnd:parseInt(p.getAttribute("columnEnd"))
 
        };
         vscode.postMessage({ type: 'jump', value: value});
