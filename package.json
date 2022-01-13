@@ -3,7 +3,7 @@
   "displayName": "Log Knife",
   "description": "a good log viewer",
   "publisher": "guohu",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.63.0"
   },
@@ -167,8 +167,6 @@
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
   },
-
-  
   "devDependencies": {
     "@types/glob": "^7.1.4",
     "@types/mocha": "^9.0.0",
