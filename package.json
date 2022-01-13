@@ -167,7 +167,7 @@
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
   },
-  "Dependencies": {
+  "dependencies": {
     "@types/vscode": "^1.63.0",
     "@types/glob": "^7.1.4",
     "@types/mocha": "^9.0.0",
