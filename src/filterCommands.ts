@@ -6,12 +6,13 @@ export function deleteFilter(filterTreeItem: vscode.TreeItem, state: State) {
     const deleteIndex = state.filterArr.findIndex(filter => (filter.id === filterTreeItem.id));
     const filter=state.filterArr[deleteIndex];
     state.filterArr.splice(deleteIndex, 1);
-    vscode.workspace.fs.delete(filter.iconPath).then(()=>{
-        console.log("delete icon file:");
+    // vscode.workspace.fs.delete(filter.iconPath).then(()=>{
+    //     console.log("delete icon file:");
         
-        refresFilterTreeView(state);
+    //     refresFilterTreeView(state);
 
-    });
+    // });
+    refresFilterTreeView(state);
 }
 
 export function addFilter(state: State) {
@@ -121,7 +122,7 @@ export function editColor(filterTreeItem: vscode.TreeItem, state: State,color:st
     const id = filterTreeItem.id;
     const filter = state.filterArr.find(filter => (filter.id === id));
     filter!.color=color;
-    
+    filter!.iconPath= vscode.Uri.joinPath(state.storageUri, `./${id+"1"}${filter!.isShown}.svg`);
     writeSvgContent(filter!, state.filterTreeViewProvider);
 
    
