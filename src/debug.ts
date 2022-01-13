@@ -1,6 +1,8 @@
 'use strict';
 import * as VSCode from 'vscode';
 import * as Process from 'child_process';
+
+//this script just for debugging. Do not make attention to this
 export class VSColorPicker {
 
     constructor(private _extensionPath: string) {

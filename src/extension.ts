@@ -135,7 +135,7 @@ const provider = new SearchWebViewProvider(context.extensionUri);
 			provider.webViewSearchFilters(doc,state.filterArr);
 		}));
 
- //just for debug----------------------------------------------------------------------------------------
+ //just for debugging----------------------------------------------------------------------------------------
 		context.subscriptions.push(
 			vscode.commands.registerCommand('log-knife.debug',()=>{
                 console.log("开始debug----------------------------------------------");
