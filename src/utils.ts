@@ -31,7 +31,7 @@ export function writeSvgContent(filter: Filter, treeViewProvider: FilterTreeView
     const emptySvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle stroke="${filter.color}" fill="transparent" stroke-width="10" cx="50" cy="50" r="45"/></svg>`;
     vscode.workspace.fs.writeFile(filter.iconPath, str2Uint8(filter.isShown ? fullSvg : emptySvg)).then(() => {
         console.log("before refresh");
-        console.log(filter.iconPath);
+        console.log("iconPath:"+filter.iconPath.fsPath);
         treeViewProvider.refresh();
     });
 }

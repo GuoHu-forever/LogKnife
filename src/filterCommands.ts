@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { State } from "./extension";
 import { generateSvgUri, writeSvgContent, generateRandomColor } from "./utils";
 
+let iconNumber:number=0;
 export function deleteFilter(filterTreeItem: vscode.TreeItem, state: State) {
     const deleteIndex = state.filterArr.findIndex(filter => (filter.id === filterTreeItem.id));
     const filter=state.filterArr[deleteIndex];
@@ -122,7 +123,8 @@ export function editColor(filterTreeItem: vscode.TreeItem, state: State,color:st
     const id = filterTreeItem.id;
     const filter = state.filterArr.find(filter => (filter.id === id));
     filter!.color=color;
-    filter!.iconPath= vscode.Uri.joinPath(state.storageUri, `./${id+"1"}${filter!.isShown}.svg`);
+    iconNumber++;
+    filter!.iconPath= vscode.Uri.joinPath(state.storageUri, `./${id}${iconNumber}${filter!.isShown}.svg`);
     writeSvgContent(filter!, state.filterTreeViewProvider);
 
    
