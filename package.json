@@ -3,7 +3,7 @@
   "displayName": "Log Knife",
   "description": "a good log viewer",
   "publisher": "guohu",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "engines": {
     "vscode": "^1.63.0"
   },

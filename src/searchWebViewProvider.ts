@@ -84,7 +84,8 @@ export class SearchWebViewProvider implements vscode.WebviewViewProvider {
         if(typeof this._results===undefined){
 			return;
 		}
-	       
+	
+
         this.viewResult();
 	
 
@@ -97,6 +98,23 @@ export class SearchWebViewProvider implements vscode.WebviewViewProvider {
 			this._view.show?.(true); // `show` is not implemented in 1.49 but is for 1.50 insiders
 			console.log("viewResult");
 			this._view.webview.postMessage({ type: 'viewResult',value:this._results});
+            console.log("icon:"+`\$(chevron-right)`);
+			console.log("icon:"+`$(chevron-right)`);
+			console.log("icon:"+`$(eye)`);
+
+		    for(var i=0;i<this._results!.length;i++){
+				var r=this._results![i];
+				var docorationType=vscode.window.createTextEditorDecorationType({
+					color: `${r.color}`,
+					fontWeight:"bold"
+				 //	gutterIconPath:`\$(chevron-right)`
+				});
+				let editor = vscode.window.activeTextEditor;
+				editor!.setDecorations(docorationType, [new vscode.Range(r.lineBegin, r.columnBegin, r.lineEnd, r.columnEnd)]);
+                    
+			}
+				
+	
 		}
 	}
 

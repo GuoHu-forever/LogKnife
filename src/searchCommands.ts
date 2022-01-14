@@ -29,6 +29,13 @@ export function searchFilters(doc: TextDocument | undefined,filters:Filter[]):Re
 
 		return undefined;
 	}
+    vscode.window.showTextDocument(doc).then(
+        () => {},
+        () => {}
+    );
+
+
+
     let results:ResultItem[]=[];
     const lineCount: number = doc.lineCount;
     for(let line:number=0;line<lineCount;line++){
@@ -37,7 +44,6 @@ export function searchFilters(doc: TextDocument | undefined,filters:Filter[]):Re
                     if(!filters[filterIndex].isShown){
                         continue;
                     }
-                        
                     if(filters[filterIndex].regex.test(textLine.text)){
                            let  item:ResultItem=new ResultItem(line,0,line,textLine.text.length-1,filters[filterIndex].color,textLine.text);
                            results.push(item);
