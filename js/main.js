@@ -8,6 +8,7 @@
     const oldState = vscode.getState() || { results: [] };
     let results = oldState.results;
     viewResultByCache(results);
+    var space="    ";
     // Handle messages sent from the extension to the webview
     window.addEventListener('message', event => {
         const message = event.data; // The json data that the extension sent
@@ -31,7 +32,7 @@
         for(var i=0;i<results.length;i++){
             var p=document.createElement("div");
             var lineNumberNodeStr="<span style='color:blue'>"+(results[i].lineBegin+1)+"</span>";
-            p.innerHTML=lineNumberNodeStr+"<span id="+i+">"+results[i].text+"\n"+"</span>";
+            p.innerHTML=lineNumberNodeStr+space+"<span id="+i+">"+results[i].text+"\n"+"</span>";
             p.style.color=results[i].color;
             p.setAttribute("line",results[i].lineBegin.toString());
             p.setAttribute("columnEnd",results[i].columnEnd.toString());
@@ -48,10 +49,11 @@
         vscode.setState({results:results});
         var container=document.getElementById('container');
         container.innerHTML="";
+  
         for(var i=0;i<results.length;i++){
             var p=document.createElement("div");
             var lineNumberNodeStr="<span style='color:blue'>"+(results[i].lineBegin+1)+"</span>";
-            p.innerHTML=lineNumberNodeStr+"<span id="+i+">"+results[i].text+"\n"+"</span>";
+            p.innerHTML=lineNumberNodeStr+space+"<span id="+i+">"+results[i].text+"\n"+"</span>";
             p.style.color=results[i].color;
             p.setAttribute("line",results[i].lineBegin.toString());
             p.setAttribute("columnEnd",results[i].columnEnd.toString());
