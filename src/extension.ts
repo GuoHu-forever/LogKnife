@@ -5,6 +5,10 @@ import { Filter, cleanUpIconFiles,getActiveDocument} from "./utils";
 import {deleteFilter, setShownOrHiden,importFilters, exportFilters, addFilter, editFilter, editColor,refresFilterTreeView } from "./filterCommands";
 import {SearchWebViewProvider} from "./searchWebViewProvider";
 import * as Process from 'child_process';
+import {LFSProvider} from './breakLargeFileLimit';
+import * as fs from 'fs';
+//import TelemetryReporter from 'vscode-extension-telemetry';
+import TelemetryReporter from 'vscode-extension-telemetry';
 //Extension storge position
 let storageUri: vscode.Uri;
 import { VSColorPicker } from './debug';
@@ -14,7 +18,7 @@ export type State = {
     filterTreeViewProvider: FilterTreeViewProvider;
     storageUri: vscode.Uri; 
 };
-
+let reporter:TelemetryReporter;
 export function activate(context: vscode.ExtensionContext) {
 
 
@@ -143,13 +147,56 @@ const provider = new SearchWebViewProvider(context.extensionUri);
 		vscode.commands.registerCommand('log-knife.searchWebView', () => {
 			let doc:vscode.TextDocument|undefined=getActiveDocument();
             if( doc === undefined){
-                vscode.window.showErrorMessage("vs限制插件使用大文件，请ctrl+c复制一份到新的tab中绕过该限制");
+                vscode.window.showErrorMessage("vs限制插件使用大文件，请ctrl+c复制一份到新的tab中绕过该限制，或者点击菜单open large file打开文件");
               
 	           return ;
              }
             doc=doc as vscode.TextDocument;
 			provider.webViewSearchFilters(doc,state.filterArr);
 		}));
+
+//Break large file limit----------------------------------------------------------------------------------
+
+	const extensionId = 'guohu.log-knife';
+	const extension = vscode.extensions.getExtension(extensionId);
+
+	if (extension) {
+		const extensionVersion = extension.packageJSON.version;
+
+		// the aik is not really sec_ret. but lets avoid bo_ts finding it too easy:
+		const strKE = 'ZjJlMDA4NTQtNmU5NC00ZDVlLTkxNDAtOGFiNmIzNTllODBi';
+		const strK = Buffer.from(strKE, "base64").toString();
+		reporter = new TelemetryReporter(extensionId, extensionVersion, strK);
+		context.subscriptions.push(reporter);
+		reporter?.sendTelemetryEvent('activate');
+	} else {
+		console.log("not found as extension!");
+	}
+
+	const lfsP = new LFSProvider(context.globalState,reporter);
+	context.subscriptions.push(vscode.workspace.registerFileSystemProvider('lfs', lfsP, { isReadonly: true, isCaseSensitive: true }));
+
+	context.subscriptions.push(vscode.commands.registerCommand('log-knife.openLargeFile', async () => {
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		return vscode.window.showOpenDialog({ canSelectFiles: true, canSelectFolders: false, canSelectMany: false, openLabel: 'Select large file to open...' }).then(
+			async (uris: vscode.Uri[] | undefined) => {
+				if (uris) {
+					uris.forEach(async (uri) => {
+                        //get metat of file
+						const fileStat = fs.statSync(uri.fsPath);
+						console.log(`open large file with size=${fileStat.size} from URI=${uri.toString()}`);
+						let lfsUri = uri.with({ scheme: 'lfs' });
+						lfsP.markLimitSize(lfsUri, true, undefined);
+						vscode.workspace.openTextDocument(lfsUri).then((value) => { vscode.window.showTextDocument(value, { preview: false }); });
+					});
+				}
+			}
+		);
+	}));
+
+	context.subscriptions.push(vscode.workspace.onDidCloseTextDocument((doc) => {
+		lfsP.onDidCloseTextDocument(doc.uri);
+	}));
 
  //just for debugging----------------------------------------------------------------------------------------
 
@@ -207,9 +254,10 @@ const provider = new SearchWebViewProvider(context.extensionUri);
 
                   
                  // vscode.commands.executeCommand("workbench.view.extension.searchWebViewContainer");
-                console.log(context.globalState.get("state"));
+              //  console.log(context.globalState.get("state"));
                 
-
+                //vscode.workspace.textDocuments[0].
+              
 
 			
 			})
