@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { State } from "./extension";
-import { generateSvgUri, writeSvgContent, generateRandomColor } from "./utils";
+import { generateSvgUri, writeSvgContent, produceColor } from "./utils";
 
 let iconNumber:number=0;
 export function deleteFilter(filterTreeItem: vscode.TreeItem, state: State) {
@@ -28,7 +28,7 @@ export function addFilter(state: State) {
         const filter = {
             isShown: true, 
             regex: new RegExp(regexStr),      
-            color: generateRandomColor(),
+            color: produceColor(state.filterArr.length),
             id,
             iconPath: generateSvgUri(state.storageUri, id, true)
     

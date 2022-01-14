@@ -15,6 +15,21 @@ export type Filter = {
 export function generateRandomColor(): string {
     return `hsl(${Math.floor(360 * Math.random())}, 40%, 40%)`;
 }
+export function produceColor(number:number){
+    var colors=[
+        "#FF0000",//read
+        "#FF7D00",//orange
+        "#FFFF00",//yellow
+        "#00FF00",//green
+        "#0000FF",//indigo
+        "#00FFFF",//blue
+        "#FF00FF"//purple
+    ];
+    return colors[number%colors.length];
+    
+     
+
+}
 
 //clean up the generated svgs stored in the folder created for this extension
 export function cleanUpIconFiles(storageUri: vscode.Uri) {
