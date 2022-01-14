@@ -68,7 +68,17 @@ export function exportFilters(state: State) {
     vscode.workspace.openTextDocument({
         content: content,
         language: "json"
-    });
+    }).then((doc)=>{
+        vscode.window.showTextDocument(doc).then(
+            () => {},
+            () => {}
+        );
+        }
+        );
+        
+
+   
+  
 }
 //open a selected json file and parse each filter to add back
 export function importFilters(state: State) {
