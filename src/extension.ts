@@ -7,7 +7,6 @@ import {SearchWebViewProvider} from "./searchWebViewProvider";
 import * as Process from 'child_process';
 //Extension storge position
 let storageUri: vscode.Uri;
-import { SearchTreeViewProvider } from './searchTreeViewProvider';
 import { VSColorPicker } from './debug';
 
 export type State = {
@@ -136,7 +135,7 @@ const provider = new SearchWebViewProvider(context.extensionUri);
 			provider.webViewSearchFilters(doc,state.filterArr);
 		}));
 
- //just for debug----------------------------------------------------------------------------------------
+ //just for debugging----------------------------------------------------------------------------------------
 		context.subscriptions.push(
 			vscode.commands.registerCommand('log-knife.debug',()=>{
                 console.log("开始debug----------------------------------------------");

@@ -1,7 +1,6 @@
 import type { TextDocument, TextLine } from "vscode";
 import { Filter} from "./utils";
 import * as vscode from "vscode";
-import { localize } from "./localize";
 
 export class ResultItem{
 
@@ -20,15 +19,7 @@ export class ResultItem{
         this.text=text;
     
     }
-    public toMarkdown(): vscode.MarkdownString {
-		const markdown: string = localize(
-			"find_result_markdown",
-		
-			this.text
-		);
-
-		return new vscode.MarkdownString(markdown);
-	}
+   
 
      
 }
