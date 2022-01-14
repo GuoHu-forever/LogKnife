@@ -33,6 +33,8 @@ export function addFilter(state: State) {
             iconPath: generateSvgUri(state.storageUri, id, true)
     
         };
+       
+        
         state.filterArr.push(filter);
         //the order of the following two lines is deliberate (due to some unknown reason of async dependencies...)
          writeSvgContent(filter, state.filterTreeViewProvider);

@@ -15,16 +15,23 @@ export type Filter = {
 export function generateRandomColor(): string {
     return `hsl(${Math.floor(360 * Math.random())}, 40%, 40%)`;
 }
-export function produceColor(number:number){
+export function produceColor(number:number):string{
     var colors=[
-        "#FF0000",//read
-        "#FF7D00",//orange
-        "#FFFF00",//yellow
-        "#00FF00",//green
-        "#0000FF",//indigo
-        "#00FFFF",//blue
-        "#FF00FF"//purple
+         `#FF0000`,//read
+        `#FF7D00`,//orange
+        `#FFFF00`,//yellow
+        `#00FF00`,//green
+        `#0000FF`,//indigo
+        `#00FFFF`,//blue
+        `#FF00FF`//purple
     ];
+    var index=number%colors.length;
+    if(index<0 || index>=colors.length){
+      console.log("索引超过colors数组,返回默认颜色");
+      return `rgb(0,0,0)`;
+      
+    }
+
     return colors[number%colors.length];
     
      
