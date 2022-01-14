@@ -45,7 +45,7 @@ export function searchFilters(doc: TextDocument | undefined,filters:Filter[]):Re
                         continue;
                     }
                     if(filters[filterIndex].regex.test(textLine.text)){
-                           let  item:ResultItem=new ResultItem(line,0,line,textLine.text.length-1,filters[filterIndex].color,textLine.text);
+                           let  item:ResultItem=new ResultItem(line,0,line,textLine.text.length,filters[filterIndex].color,textLine.text);
                            results.push(item);
                            break;
                     }

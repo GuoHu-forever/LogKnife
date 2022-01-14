@@ -30,13 +30,24 @@ export function activate(context: vscode.ExtensionContext) {
         filterTreeViewProvider: new FilterTreeViewProvider(filterArr),
         storageUri
     };
+    if(!context.globalState.get("state")){
+        console.log("state is null");
+        
+        context.globalState.update("state","1");
+
+    }
+    
+
     /*filter Tree View code start----------------------------------------------------------------
 	  filter tree View is on the sidebar of Vscode, you can add/remove/import/export fitlers
 	*/
 
-    vscode.window.registerTreeDataProvider('log-knife-view', state.filterTreeViewProvider);
-    
-
+   // vscode.window.registerTreeDataProvider('log-knife-view', state.filterTreeViewProvider);
+    let treeView=vscode.window.createTreeView("log-knife-view",{
+        treeDataProvider:state.filterTreeViewProvider,
+        canSelectMany:true
+    });
+  
     let disposableExport = vscode.commands.registerCommand(
         "log-knife.exportFilters", 
         () => exportFilters(state));
@@ -121,8 +132,13 @@ export function activate(context: vscode.ExtensionContext) {
 const provider = new SearchWebViewProvider(context.extensionUri);
 
 	context.subscriptions.push(
-		vscode.window.registerWebviewViewProvider('searchWebView', provider));
+		vscode.window.registerWebviewViewProvider('searchWebView', provider,{
+            webviewOptions:{
+                retainContextWhenHidden:true
+            }
+        }));
 
+     
 	context.subscriptions.push(
 		vscode.commands.registerCommand('log-knife.searchWebView', () => {
 			let doc:vscode.TextDocument|undefined=getActiveDocument();
@@ -136,7 +152,15 @@ const provider = new SearchWebViewProvider(context.extensionUri);
 		}));
 
  //just for debugging----------------------------------------------------------------------------------------
-		context.subscriptions.push(
+
+    const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 10);
+    statusBarItem.command = 'log-knife.debug';
+    statusBarItem.text = 'Debug';
+    statusBarItem.show();
+    context.subscriptions.push(statusBarItem);
+   
+ 
+ context.subscriptions.push(
 			vscode.commands.registerCommand('log-knife.debug',()=>{
                 console.log("开始debug----------------------------------------------");
               
@@ -178,11 +202,13 @@ const provider = new SearchWebViewProvider(context.extensionUri);
            
 
                     // // var  ArrayList = Java.type("java.util.ArrayList");
-                     var picker=new VSColorPicker(context.extensionUri.fsPath);
-                     picker.LaunchColorPickerWindow();
+                    //  var picker=new VSColorPicker(context.extensionUri.fsPath);
+                    //  picker.LaunchColorPickerWindow();
 
-
-
+                  
+                 // vscode.commands.executeCommand("workbench.view.extension.searchWebViewContainer");
+                console.log(context.globalState.get("state"));
+                
 
 
 			

@@ -126,12 +126,8 @@
           "command": "log-knife.searchWebView",
           "when": "view == searchWebView",
           "group": "navigation"
-        },
-        {
-          "command": "log-knife.debug",
-          "when": "view == searchWebView",
-          "group": "navigation"
         }
+       
       ]
     },
     "viewsContainers": {

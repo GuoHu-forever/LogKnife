@@ -19,11 +19,12 @@ export class SearchWebViewProvider implements vscode.WebviewViewProvider {
 		context: vscode.WebviewViewResolveContext,
 		_token: vscode.CancellationToken,
 	) {
+		
 		console.log("resolveWebviewView");
 		
-
+        
 		this._view = webviewView;
-
+ 
 		webviewView.webview.options = {
 			// Allow scripts in the webview
 			enableScripts: true,
@@ -44,6 +45,9 @@ export class SearchWebViewProvider implements vscode.WebviewViewProvider {
 					}
 			}
 		});
+		// webviewView.onDidDispose(()=>{
+		// 	vscode.commands.executeCommand("searchWebView.removeView");
+		// });
 	}
     private _getHtmlForWebview(webview: vscode.Webview) {
         
@@ -93,29 +97,31 @@ export class SearchWebViewProvider implements vscode.WebviewViewProvider {
     
     public viewResult() {
 		
+		 vscode.commands.executeCommand("workbench.view.extension.searchWebViewContainer").then(()=>{
+			 console.log("Webview up！");
+			 
+			if (this._view) {
+				this._view.show(false);
+				console.log("viewResult");
+				this._view.webview.postMessage({ type: 'viewResult',value:this._results});
 		
-		if (this._view) {
-			this._view.show?.(true); // `show` is not implemented in 1.49 but is for 1.50 insiders
-			console.log("viewResult");
-			this._view.webview.postMessage({ type: 'viewResult',value:this._results});
-            console.log("icon:"+`\$(chevron-right)`);
-			console.log("icon:"+`$(chevron-right)`);
-			console.log("icon:"+`$(eye)`);
-
-		    for(var i=0;i<this._results!.length;i++){
-				var r=this._results![i];
-				var docorationType=vscode.window.createTextEditorDecorationType({
-					color: `${r.color}`,
-					fontWeight:"bold"
-				 //	gutterIconPath:`\$(chevron-right)`
-				});
-				let editor = vscode.window.activeTextEditor;
-				editor!.setDecorations(docorationType, [new vscode.Range(r.lineBegin, r.columnBegin, r.lineEnd, r.columnEnd)]);
-                    
+				for(var i=0;i<this._results!.length;i++){
+					var r=this._results![i];
+					var docorationType=vscode.window.createTextEditorDecorationType({
+						color: `${r.color}`,
+						fontWeight:"bold"
+					 //	gutterIconPath:`\$(chevron-right)`
+					});
+					let editor = vscode.window.activeTextEditor;
+					editor!.setDecorations(docorationType, [new vscode.Range(r.lineBegin, r.columnBegin, r.lineEnd, r.columnEnd)]);
+						
+				}		
+		
 			}
-				
+		 }
+
+		);
 	
-		}
 	}
 
     public jump(value:any){
