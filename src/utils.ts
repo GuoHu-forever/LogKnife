@@ -3,12 +3,22 @@ import { FilterTreeViewProvider } from "./filterTreeViewProvider";
 
 
 // One filter corresponds to one line in the configuration file
-export type Filter = {
-    isShown: boolean; 
-    regex: RegExp;
-    color: string;
-    id: string; //random generated number
-    iconPath: vscode.Uri; //point to the isHighlighted/isNotHighlighted svg icon in the file system
+//for display in tree view
+export type FilterNode = {
+    isShown?: boolean; 
+    regex?: RegExp;
+    color?: string;
+    id?: number; //random generated number
+    iconPath?: vscode.Uri; //
+    isGroup?:boolean;
+    children?:FilterNode[];
+    parent?:FilterNode;
+};
+//for search in webview
+export type Filter={
+    isShown:boolean;
+    regex:RegExp;
+    color:string;  
 };
 
 
@@ -48,12 +58,12 @@ export function cleanUpIconFiles(storageUri: vscode.Uri) {
 
 //create an svg icon representing a filter: a filled circle if the filter is shown, or an empty circle otherwise.
 //this icon gets stored in the file system at filter.iconPath.
-export function writeSvgContent(filter: Filter, treeViewProvider: FilterTreeViewProvider): void {
+export function writeSvgContent(filter:FilterNode, treeViewProvider: FilterTreeViewProvider): void {
     const fullSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle fill="${filter.color}" cx="50" cy="50" r="50"/></svg>`;
     const emptySvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle stroke="${filter.color}" fill="transparent" stroke-width="10" cx="50" cy="50" r="45"/></svg>`;
-    vscode.workspace.fs.writeFile(filter.iconPath, str2Uint8(filter.isShown ? fullSvg : emptySvg)).then(() => {
+    vscode.workspace.fs.writeFile(filter.iconPath!, str2Uint8(filter.isShown ? fullSvg : emptySvg)).then(() => {
         console.log("before refresh");
-        console.log("iconPath:"+filter.iconPath.fsPath);
+        console.log("iconPath:"+filter.iconPath!.fsPath);
         treeViewProvider.refresh();
     });
 }
@@ -68,7 +78,7 @@ function str2Uint8(str: string): Uint8Array {
     return bufView;
 }
 
-export function generateSvgUri(storageUri: vscode.Uri, id: string, isShown: boolean): vscode.Uri {
+export function generateSvgUri(storageUri: vscode.Uri, id: number, isShown: boolean): vscode.Uri {
     //forexample C:\Users\AlanGuo666\AppData\Roaming\Code\User\globalStorage\undefined_publisher.log-knife/0.4490539887309699true.svg
     return vscode.Uri.joinPath(storageUri, `./${id}${isShown}.svg`);
 }
@@ -81,3 +91,27 @@ export const getActiveDocument = (): vscode.TextDocument | undefined => {
 	// Get the active document
 	return vscode.window.activeTextEditor.document;
 };
+export function flattenFilterNode(filterNode:FilterNode){
+    var filters:Filter[]=[];
+    flattenFilterNodeInner(filterNode,filters);
+    return filters;
+}
+function flattenFilterNodeInner(filterNode:FilterNode,filters:Filter[]){
+    if(!filterNode.isGroup){
+        filters.push({
+            isShown:filterNode.isShown!,
+            regex:filterNode.regex!,
+            color:filterNode.color!
+        });
+        return ;
+    }else{
+        if(!filterNode.isShown){
+            return;
+        }else{
+            filterNode.children?.forEach((child)=>{
+                   flattenFilterNodeInner(child,filters);
+            });
+        }        
+        
+    }
+}
