@@ -16,6 +16,7 @@ export type State = {
     filterRoot: FilterNode;
     filterTreeViewProvider: FilterTreeViewProvider;
     storageUri: vscode.Uri; 
+    searchWebviewProvider?:SearchWebViewProvider;
 };
 export function activate(context: vscode.ExtensionContext) {
 
@@ -178,6 +179,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     
 const provider = new SearchWebViewProvider(context.extensionUri);
+state.searchWebviewProvider=provider;
 
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider('searchWebView', provider,{

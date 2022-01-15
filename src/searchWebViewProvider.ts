@@ -81,7 +81,23 @@ export class SearchWebViewProvider implements vscode.WebviewViewProvider {
 		console.log("webViewSearchFilters");
 		console.log("fiters:  "+filters);
 		this._doc=doc;
-		
+		// undo the decorations
+		// if(this._results) {
+		// 	for(var i=0;i<this._results!.length;i++){
+		// 		var r=this._results![i];
+		// 		var docorationType=vscode.window.createTextEditorDecorationType({
+		// 			color: `${r.color}`,
+		// 			fontWeight:"bold"
+		// 		//	gutterIconPath:`\$(chevron-right)`
+		// 		});
+		// 		let editor = vscode.window.activeTextEditor;
+		// 		editor!.setDecorations(docorationType,[]);
+			
+
+		// 	}	
+	    // }	
+        
+
         this._results=searchFilters(doc,filters);
 		console.log("results: "+this._results);
 		
@@ -114,7 +130,7 @@ export class SearchWebViewProvider implements vscode.WebviewViewProvider {
 					});
 					let editor = vscode.window.activeTextEditor;
 					editor!.setDecorations(docorationType, [new vscode.Range(r.lineBegin, r.columnBegin, r.lineEnd, r.columnEnd)]);
-						
+				
 				}		
 		
 			}
