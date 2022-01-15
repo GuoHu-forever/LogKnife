@@ -114,6 +114,7 @@
         {
           "command": "log-knife.editFilter",
           "when": "view == log-knife-view&& viewItem!=group"
+         
       
         },
         {
@@ -139,18 +140,19 @@
         },
         {
           "command": "log-knife.addFilterInGroup",
-          "when": "view == log-knife-view&& viewItem==group"
-         
+          "when": "view == log-knife-view&& viewItem==group",
+          "group": "1_actions@0"
         },
         {
           "command": "log-knife.addFilterGroup",
-          "when": "view == log-knife-view&& viewItem==group"
+          "when": "view == log-knife-view&& viewItem==group",
+          "group": "5_copy@0"
          
         },
         {
           "command": "log-knife.editFilterGroup",
-          "when": "view == log-knife-view&& viewItem==group"
-         
+          "when": "view == log-knife-view&& viewItem==group",
+          "group": "inline@0"
         },
         {
           "command": "log-knife.deleteFilter",
@@ -168,7 +170,8 @@
       "view/title": [
         {
           "command": "log-knife.addFilterGroup",
-          "when": "view == log-knife-view"
+          "when": "view == log-knife-view",
+          "group": "navigation"
          
         },
         {

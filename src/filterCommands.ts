@@ -27,13 +27,15 @@ export function addFilterGroup(state:State,treeItem: FilterItem){
         if(!filterNode.children){
             filterNode.children=[];
         }
+        
 
         filterNode.children.push({
             id:filterNode.children.length,
             isGroup:true,
             regex:new RegExp(groupName),
             parent:filterNode,
-            isShown:true   
+            isShown:true,
+           /* iconPath:vscode.Uri.file('$(eye)')*/
         });
         refresFilterTreeView(state);
 
@@ -49,7 +51,7 @@ export function editFilterGroup(state:State,treeItem: FilterItem){
             return;
         }
         var filterNode=treeItem.filterNode;
-        filterNode.regex=new RegExp(groupName);
+        filterNode.regex=new RegExp(groupName)
         refresFilterTreeView(state);
     });
 }

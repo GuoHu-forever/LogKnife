@@ -59,8 +59,8 @@ export function cleanUpIconFiles(storageUri: vscode.Uri) {
 //create an svg icon representing a filter: a filled circle if the filter is shown, or an empty circle otherwise.
 //this icon gets stored in the file system at filter.iconPath.
 export function writeSvgContent(filter:FilterNode, treeViewProvider: FilterTreeViewProvider): void {
-    const fullSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle fill="${filter.color}" cx="50" cy="50" r="50"/></svg>`;
-    const emptySvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle stroke="${filter.color}" fill="transparent" stroke-width="10" cx="50" cy="50" r="45"/></svg>`;
+    const fullSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle fill="${filter.color}" cx="50" cy="50" r="30"/></svg>`;
+    const emptySvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle stroke="${filter.color}" fill="transparent" stroke-width="10" cx="50" cy="50" r="35"/></svg>`;
     vscode.workspace.fs.writeFile(filter.iconPath!, str2Uint8(filter.isShown ? fullSvg : emptySvg)).then(() => {
         console.log("before refresh");
         console.log("iconPath:"+filter.iconPath!.fsPath);
@@ -94,7 +94,10 @@ export const getActiveDocument = (): vscode.TextDocument | undefined => {
 export function flattenFilterNode(filterNode:FilterNode){
     var filters:Filter[]=[];
     flattenFilterNodeInner(filterNode,filters);
+    console.log("filters:"+filters);
     return filters;
+    
+    
 }
 function flattenFilterNodeInner(filterNode:FilterNode,filters:Filter[]){
     if(!filterNode.isGroup){

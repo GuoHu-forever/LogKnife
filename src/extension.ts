@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
     //internal globals
     const root:FilterNode={
         isGroup:true,
-        isShown:false
+        isShown:true
     };
 	//global variable so you can visit it everywhere
     const state: State = {

@@ -20,7 +20,7 @@ export class FilterTreeViewProvider implements vscode.TreeDataProvider<FilterIte
             }else{
                 return filterNode.children.map(child=>new FilterItem(child));
             }
-            return [];
+          
         } else { // root
             if(this.root.children){
                 return this.root.children.map(child=>new FilterItem(child));
@@ -44,9 +44,16 @@ export class FilterTreeViewProvider implements vscode.TreeDataProvider<FilterIte
 export class FilterItem extends vscode.TreeItem {
 
     constructor(
-        public filterNode: FilterNode,
+        public filterNode: FilterNode
     ) {
         super(filterNode.regex!.toString());
+       if(this.filterNode.isGroup){
+           this.collapsibleState=vscode.TreeItemCollapsibleState.Expanded;
+
+       }else{
+        this.collapsibleState=vscode.TreeItemCollapsibleState.None;
+       }
+        
         this.label = filterNode.regex!.source;
         this.iconPath = filterNode.iconPath;
         if(filterNode.isGroup){
