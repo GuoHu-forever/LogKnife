@@ -13,17 +13,16 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { createInterface } from 'readline';
 const { once } = require('events');
-import TelemetryReporter from 'vscode-extension-telemetry';
 
 
-export class LFSProvider implements vscode.FileSystemProvider { // export only for test access?
+export class LargeFileSystemProvider implements vscode.FileSystemProvider { // export only for test access?
 
 	limitedSize: number = 1024 * 1024; // limit to 1MB on first read.
 	reReadTimeout: number = 5000; // 5s default
 	private _fileFilters: string[]=[];
 	private _uriMap: Map<string, { limitSize: boolean, fileBuffer?: Buffer, filters?: { search: string, replace: string }[] }> = new Map<string, { limitSize: boolean, fileBuffer?: Buffer, filters?: { search: string, replace: string }[] }>();
 
-	constructor(private storage?: vscode.Memento,private reporter?:TelemetryReporter) {
+	constructor(private storage?: vscode.Memento) {
 
 	}
 
@@ -134,7 +133,7 @@ export class LFSProvider implements vscode.FileSystemProvider { // export only f
 			if (!curSet.fileBuffer) {
 				throw vscode.FileSystemError.FileNotFound();
 			}
-			this.reporter?.sendTelemetryEvent('open large file', undefined, { 'fileSize': curSet.fileBuffer.length, 'filters': curSet.filters?.length || 0 });
+		
 		}
 
 		if (curSet.limitSize && curSet.fileBuffer && (curSet.fileBuffer.length <= this.limitedSize)) {
