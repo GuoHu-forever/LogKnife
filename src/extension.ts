@@ -2,7 +2,7 @@
 import * as vscode from 'vscode';
 import { FilterTreeViewProvider,FilterItem } from "./filterTreeViewProvider";
 import { flattenFilterNode,cleanUpIconFiles,getActiveDocument, FilterNode} from "./utils";
-import {editFilterGroup,addFilterGroup, setShownOrHiden,importFilters, exportFilters, addFilter, editFilter, deleteFilter,editColor,refresFilterTreeView } from "./filterCommands";
+import {moveUpOrDown,editFilterGroup,addFilterGroup, setShownOrHiden,importFilters, exportFilters, addFilter, editFilter, deleteFilter,editColor,refresFilterTreeView } from "./filterCommands";
 import {SearchWebViewProvider} from "./searchWebViewProvider";
 import * as Process from 'child_process';
 import {LargeFileSystemProvider} from './LargeFileSystemProvider';
@@ -28,7 +28,10 @@ export function activate(context: vscode.ExtensionContext) {
     //internal globals
     const root:FilterNode={
         isGroup:true,
-        isShown:true
+        isShown:true,
+        id:0,
+        children:[],
+        regex:new RegExp("log-knife-root")
     };
 	//global variable so you can visit it everywhere
     const state: State = {
@@ -54,6 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
         treeDataProvider:state.filterTreeViewProvider,
         canSelectMany:true
     });
+  
   
     
    //import and export --------------------------------------------
@@ -101,11 +105,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     let disposibleDeleteFilter = vscode.commands.registerCommand(
         "log-knife.deleteFilter",
-        (filterTreeItem: vscode.TreeItem) => deleteFilter(state,<FilterItem>filterTreeItem)
+        (filterTreeItem: vscode.TreeItem) => deleteFilter(state,(<FilterItem>filterTreeItem).filterNode)
     );
     context.subscriptions.push(disposibleDeleteFilter);
    
-    //add edit remove group
+    //add edit remove group-----------------------------
     context.subscriptions.push(vscode.commands.registerCommand(
         "log-knife.addFilterGroup",
         (item) => addFilterGroup(state,item)
@@ -115,6 +119,20 @@ export function activate(context: vscode.ExtensionContext) {
         "log-knife.editFilterGroup",                
         (filterTreeItem: vscode.TreeItem) => editFilterGroup(state,<FilterItem>filterTreeItem)
     ));
+    
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "log-knife.deleteFilterGroup",
+        (filterTreeItem: vscode.TreeItem) => deleteFilter(state,(<FilterItem>filterTreeItem).filterNode)
+    ));
+
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "log-knife.deleteAllFilter",
+        (filterTreeItem: vscode.TreeItem,filterTreeItem2: vscode.TreeItem) => deleteFilter(state,state.filterRoot)
+    ));
+   
+   
+    
+
  
 
     //enable or disable filter------------------------------------------------
@@ -130,8 +148,8 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(vscode.commands.registerCommand(
         "log-knife.disableAllFilter",
-        (filterTreeItem: vscode.TreeItem) => setShownOrHiden(false, state,state.filterRoot)
-    ));
+        (filterTreeItem: vscode.TreeItem) => setShownOrHiden(false,  state,state.filterRoot)
+        ));
     context.subscriptions.push(vscode.commands.registerCommand(
         "log-knife.disableFilter",
         (filterTreeItem: vscode.TreeItem) => setShownOrHiden(false, state,(<FilterItem>filterTreeItem).filterNode)
@@ -170,9 +188,20 @@ export function activate(context: vscode.ExtensionContext) {
     );
 	context.subscriptions.push(disposibleEditColor);
    
+//refresh treeView-------------------------------------------------------
+context.subscriptions.push(vscode.commands.registerCommand(
+    "log-knife.refresFilterTreeView",
+    () => refresFilterTreeView(state)
+));
 
-
-
+context.subscriptions.push(vscode.commands.registerCommand(
+    "log-knife.moveUp",
+    () => moveUpOrDown(state,treeView,true)
+));
+context.subscriptions.push(vscode.commands.registerCommand(
+    "log-knife.moveDown",
+    () => moveUpOrDown(state,treeView,false)
+));
 /*Search of fiters into Log and display on the panel start-----------------------------------
   this section is responsible for searching with regex and displaying with webview
 */

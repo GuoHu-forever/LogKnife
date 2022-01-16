@@ -1,3 +1,4 @@
+import { createDiffieHellman } from "crypto";
 import * as vscode from "vscode";
 import { FilterTreeViewProvider } from "./filterTreeViewProvider";
 
@@ -9,7 +10,7 @@ export type FilterNode = {
     regex?: RegExp;
     color?: string;
     id?: number; //random generated number
-    iconPath?: vscode.Uri; //
+    iconPath?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri } | vscode.ThemeIcon; //
     isGroup?:boolean;
     children?:FilterNode[];
     parent?:FilterNode;
@@ -61,12 +62,18 @@ export function cleanUpIconFiles(storageUri: vscode.Uri) {
 export function writeSvgContent(filter:FilterNode, treeViewProvider: FilterTreeViewProvider): void {
     const fullSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle fill="${filter.color}" cx="50" cy="50" r="30"/></svg>`;
     const emptySvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle stroke="${filter.color}" fill="transparent" stroke-width="10" cx="50" cy="50" r="35"/></svg>`;
-    vscode.workspace.fs.writeFile(filter.iconPath!, str2Uint8(filter.isShown ? fullSvg : emptySvg)).then(() => {
+    vscode.workspace.fs.writeFile(filter.iconPath!as vscode.Uri, str2Uint8(filter.isShown ? fullSvg : emptySvg)).then(() => {
         console.log("before refresh");
-        console.log("iconPath:"+filter.iconPath!.fsPath);
+        console.log("iconPath:"+(filter.iconPath!as vscode.Uri).fsPath);
         treeViewProvider.refresh();
     });
 }
+export function writeSvgContentNoRefresh(filter:FilterNode): void {
+    const fullSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle fill="${filter.color}" cx="50" cy="50" r="30"/></svg>`;
+    const emptySvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle stroke="${filter.color}" fill="transparent" stroke-width="10" cx="50" cy="50" r="35"/></svg>`;
+    vscode.workspace.fs.writeFile(filter.iconPath!as vscode.Uri, str2Uint8(filter.isShown ? fullSvg : emptySvg));
+}
+
 
 //convert a string to a Uint8Array
 function str2Uint8(str: string): Uint8Array {
@@ -77,8 +84,45 @@ function str2Uint8(str: string): Uint8Array {
     }
     return bufView;
 }
+// the Svg file id include parent id
+var   iconNumber=0;
+export function genearteSvgIdStr(filterNode:FilterNode){
+    iconNumber++;
+    var idstr=genearteSvgIdStrInner(filterNode);
+    return iconNumber+idstr;
 
-export function generateSvgUri(storageUri: vscode.Uri, id: number, isShown: boolean): vscode.Uri {
+}
+export function genearteSvgIdStrInner(filterNode:FilterNode){
+        
+          
+       if(!filterNode.parent){
+        return (filterNode.id!+iconNumber).toString();
+       }
+       var parentIdstr:string=genearteSvgIdStr(filterNode.parent);
+       return filterNode.id!.toString()+parentIdstr;
+
+}
+// genearte icon path and relationship between paren and son.
+export function reconstructTree(filterNode:FilterNode,storageUri: vscode.Uri){
+     if(filterNode.isGroup){
+         filterNode.iconPath=new vscode.ThemeIcon("window");
+         for(var i=0;i<filterNode.children!.length;i++){
+            var child=filterNode.children![i];
+            reconstructTree(child,storageUri);
+            child.parent=filterNode;  
+        }
+
+     }else{
+        filterNode.iconPath=generateSvgUri(storageUri,genearteSvgIdStr(filterNode), true);
+        writeSvgContentNoRefresh(filterNode);
+     }
+
+   
+     
+}
+
+
+export function generateSvgUri(storageUri: vscode.Uri, id: string, isShown: boolean): vscode.Uri {
     //forexample C:\Users\AlanGuo666\AppData\Roaming\Code\User\globalStorage\undefined_publisher.log-knife/0.4490539887309699true.svg
     return vscode.Uri.joinPath(storageUri, `./${id}${isShown}.svg`);
 }
