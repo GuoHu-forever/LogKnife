@@ -1,22 +1,69 @@
+import { group } from "console";
+import { stat } from "fs";
 import * as vscode from "vscode";
 import { State } from "./extension";
-import { generateSvgUri, writeSvgContent, produceColor } from "./utils";
+import {reconstructTree, generateSvgUri, writeSvgContent, produceColor, FilterNode ,genearteSvgIdStr} from "./utils";
+import {FilterItem} from "./filterTreeViewProvider";
+
+import { fileURLToPath } from "url";
+import { chdir } from "process";
 
 let iconNumber:number=0;
-export function deleteFilter(filterTreeItem: vscode.TreeItem, state: State) {
-    const deleteIndex = state.filterArr.findIndex(filter => (filter.id === filterTreeItem.id));
-    const filter=state.filterArr[deleteIndex];
-    state.filterArr.splice(deleteIndex, 1);
-    // vscode.workspace.fs.delete(filter.iconPath).then(()=>{
-    //     console.log("delete icon file:");
-        
-    //     refresFilterTreeView(state);
 
-    // });
-    refresFilterTreeView(state);
+export function addFilterGroup(state:State,treeItem: FilterItem){
+    vscode.window.showInputBox({
+        prompt: "Type a filter group name",
+        ignoreFocusOut: false
+    }).then(async groupName => {
+        if (groupName === undefined) {
+            return;
+        }
+        var filterNode;
+        if(!treeItem){
+            filterNode=state.filterRoot;
+        }else{
+            filterNode=treeItem.filterNode;
+        }
+   
+
+        if(!filterNode.children){
+            filterNode.children=[];
+        }
+        
+
+        filterNode.children.push({
+            id:filterNode.children.length,
+            isGroup:true,
+            regex:new RegExp(groupName),
+            parent:filterNode,
+            isShown:true,
+            iconPath:new vscode.ThemeIcon("window"),
+            children:[]
+               
+        });
+        refresFilterTreeView(state);
+
+    });
 }
 
-export function addFilter(state: State) {
+export function editFilterGroup(state:State,treeItem: FilterItem){
+    vscode.window.showInputBox({
+        prompt: "Type a filter group name",
+        ignoreFocusOut: false
+    }).then(async groupName => {
+        if (groupName === undefined) {
+            return;
+        }
+        var filterNode=treeItem.filterNode;
+        filterNode.regex=new RegExp(groupName);
+        refresFilterTreeView(state);
+    });
+}
+ 
+   
+
+
+export function addFilter(state:State,treeItem?: FilterItem) {
     vscode.window.showInputBox({
         prompt: "Type a regex to filter",
         ignoreFocusOut: false
@@ -24,25 +71,38 @@ export function addFilter(state: State) {
         if (regexStr === undefined) {
             return;
         }
-        const id = `${Math.random()}`;
-        const filter = {
-            isShown: true, 
-            regex: new RegExp(regexStr),      
-            color: produceColor(state.filterArr.length),
-            id,
-            iconPath: generateSvgUri(state.storageUri, id, true)
-    
+        var groupNode;
+        if(!treeItem){
+            groupNode=state.filterRoot;
+        }else{
+            groupNode=treeItem.filterNode;
+        }
+     
+
+        if(!groupNode.children){
+            groupNode.children=[];
+        }
+
+        const id = groupNode.children!.length;
+       let filterNode:FilterNode={
+            id:id,
+            regex:new RegExp(regexStr),
+            color:produceColor(id),
+            isShown:true,
+            isGroup:false,
+            parent:groupNode     
+
         };
-       
-        
-        state.filterArr.push(filter);
+        filterNode.iconPath=generateSvgUri(state.storageUri, genearteSvgIdStr(filterNode), true),
+        groupNode.children!.push(filterNode);
+   
         //the order of the following two lines is deliberate (due to some unknown reason of async dependencies...)
-         writeSvgContent(filter, state.filterTreeViewProvider);
+         writeSvgContent(filterNode, state.filterTreeViewProvider);
         //refresFilterTreeView(state);
     });
 }
 
-export function editFilter(filterTreeItem: vscode.TreeItem, state: State) {
+export function editFilter(state:State,treeItem: FilterItem) {
     vscode.window.showInputBox({
         prompt: "Type a new regex",
         ignoreFocusOut: false
@@ -50,21 +110,97 @@ export function editFilter(filterTreeItem: vscode.TreeItem, state: State) {
         if (regexStr === undefined) {
             return;
         }
-        const id = filterTreeItem.id;
-        const filter = state.filterArr.find(filter => (filter.id === id));
-        filter!.regex = new RegExp(regexStr);
+        var filterNode=treeItem.filterNode;
+        filterNode.regex=new RegExp(regexStr);
         refresFilterTreeView(state);
     });
 }
+export function deleteFilter(state:State,filterNode:FilterNode) {
+    if(!filterNode.parent){
+         state.filterRoot.children=[];
+     }else{
+        var parent=filterNode.parent;
+        var index=parent.children?.findIndex(child=>(child.id==filterNode.id));
+    
+        parent?.children?.splice(index!,1);
+     }
+   
+    refresFilterTreeView(state);
+    
+    
+}
+export function moveUpOrDown(state:State,treeView:vscode.TreeView<FilterItem>,isUp:boolean) {
+    var filters =treeView.selection;
+    if(!filters||filters.length<0){
+          return;
+    }
+    
+    var filterNode=filters[0].filterNode;
+    var parent=filterNode.parent;
+    if(parent){
+        var index=parent.children?.findIndex(child=>(child.id===filterNode.id));
+        if(!index||index<=0){
+            return;
+        }
+        var p=isUp?index-1:index+1;
+        if(p<0||p>=parent.children!.length){
+            return;
+        }
+        
+        parent.children![index]=parent.children?.splice(p,1,parent.children[index])[0] as FilterNode;
+    
+    }
+
+    refresFilterTreeView(state);
+    
+}
+
+export function moveDown(state:State,treeView:vscode.TreeView<FilterItem>) {
+    var filters =treeView.selection;
+    if(!filters||filters.length<0){
+          return;
+    }
+    var filterNode=filters[0].filterNode;
+    var parent=filterNode.parent;
+    if(parent){
+        var index=parent.children?.findIndex(child=>(child.id===filterNode.id));
+        if(!index||index<=0){
+            return;
+        }
+        
+        parent.children![index]=parent.children?.splice(index-1,1,parent.children[index])[0] as FilterNode;
+    
+    }
+
+    refresFilterTreeView(state);
+    
+}
+
+
+
+
 //record the important fields of each filter on a json object and open a new tab for the json
-export function exportFilters(state: State) {
-    const content = JSON.stringify(state.filterArr.map(filter => {
-        return {
-            regexText: filter.regex.source,
-            color: filter.color,
-            isShown: filter.isShown,
-        };
-    }));
+export function exportFilters(parenNode:FilterNode) {
+    console.log("export filters:"+parenNode.children);
+    
+    const  content =JSON.stringify(parenNode,(key,value)=>{
+        if(key==="regex"){
+            return value.source;
+        }
+        if(key==="iconPath"){
+            return undefined;
+        }
+        if(key==="parent"){
+            return undefined;
+        }
+        if(key==="parent"){
+            return undefined;
+        }
+        return value;
+
+    });
+    console.log("content:"+content);
+    
     vscode.workspace.openTextDocument({
         content: content,
         language: "json"
@@ -74,14 +210,14 @@ export function exportFilters(state: State) {
             () => {}
         );
         }
-        );
-        
-
-   
-  
+        );      
 }
-//open a selected json file and parse each filter to add back
-export function importFilters(state: State) {
+
+
+
+
+
+export function importFilters(state: State,parenNode:FilterNode) {
         vscode.window.showOpenDialog({
             canSelectFiles: true, 
             canSelectMany: false, 
@@ -95,51 +231,73 @@ export function importFilters(state: State) {
             return vscode.workspace.openTextDocument(uriArr[0]);
         }).then(textDocument => {
             const text = textDocument!.getText();
-            const parsed = JSON.parse(text);
+            const parsed = JSON.parse(text,(key,value)=>{
+                if(key==="regex"){
+                    return new RegExp(value);
+                }
+                return value;
+            });
             if (typeof parsed !== "object") {
                 return;
             }
-            const array = parsed as any[];
-            array.forEach((filterText) => {
-                if (
-                    (typeof filterText.regexText === "string") &&
-                    (typeof filterText.color === "string") &&
-                    (typeof filterText.isShown === "boolean")
-                ) {
-                    const id = `${Math.random()}`;
-                    const filter = {
-                        regex: new RegExp(filterText.regexText),
-                        color: filterText.color as string,
-                        isShown: filterText.isShown as boolean,
-                        id,
-                        iconPath: generateSvgUri(state.storageUri, id, filterText.isShown),
-                    };
-                    state.filterArr.push(filter);
-                    writeSvgContent(filter, state.filterTreeViewProvider);
-                }
-            });
+            const filterNode=parsed as FilterNode;
+
+            reconstructTree(filterNode,state.storageUri);
+            //filterNode doesn't belong to any group
+            if(filterNode.regex?.source==="log-knife-root"){
+                filterNode.children?.forEach((child)=>{
+                    child.id=parenNode.children?.length;
+                    parenNode.children?.push(child);
+                    child.parent=parenNode;
+                  
+                });
+
+            }else{
+                filterNode.parent=parenNode;
+                filterNode.id=parenNode.children!.length;
+                parenNode.children!.push(filterNode);
+                
+            }
             refresFilterTreeView(state);
+        
         });
-}
-//show or hidne
-
-export function setShownOrHiden(isShown: boolean, filterTreeItem: vscode.TreeItem, state: State) {
-    const id = filterTreeItem.id;
-    const filter = state.filterArr.find(filter => (filter.id === id));
-    filter!.isShown = isShown;
-    filter!.iconPath = generateSvgUri(state.storageUri, filter!.id, filter!.isShown);
-    writeSvgContent(filter!, state.filterTreeViewProvider);
+           
 }
 
-export function editColor(filterTreeItem: vscode.TreeItem, state: State,color:string){
-    const id = filterTreeItem.id;
-    const filter = state.filterArr.find(filter => (filter.id === id));
-    filter!.color=color;
+
+
+
+
+//show or hide filters, support group
+
+export function setShownOrHiden(isShown: boolean, state:State,filterNode:FilterNode) {
+    if(filterNode.isGroup){
+        var children=filterNode.children;
+        if(children){
+            children.forEach((son)=>{
+                setShownOrHiden(isShown, state,son);
+            });
+        }
+    }else{
+        
+        filterNode.isShown=isShown;
+        filterNode.iconPath=generateSvgUri(state.storageUri, genearteSvgIdStr(filterNode),filterNode.isShown!);
+        writeSvgContent(filterNode!, state.filterTreeViewProvider);
+    }
+}
+
+
+export function editColor(color:string,state:State,treeItem: FilterItem){
+    
+
+    
+    var filterNode=treeItem.filterNode;
+    var isShown=filterNode.isShown;
+    filterNode!.color=color;
     iconNumber++;
-    filter!.iconPath= vscode.Uri.joinPath(state.storageUri, `./${id}${iconNumber}${filter!.isShown}.svg`);
-    writeSvgContent(filter!, state.filterTreeViewProvider);
-
+    filterNode.iconPath=generateSvgUri(state.storageUri, genearteSvgIdStr(filterNode)+iconNumber,filterNode.isShown!);
    
+    writeSvgContent(filterNode!, state.filterTreeViewProvider); 
 
 }
 

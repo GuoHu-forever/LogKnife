@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
-import { Filter } from "./utils";
+import { FilterNode } from "./utils";
 
 //provides filters as tree items to be displayed on the sidebar
 export class FilterTreeViewProvider implements vscode.TreeDataProvider<FilterItem> {
 
-    constructor(private filterArr:Filter[]) {}
+    constructor(private root:FilterNode) {}
 
     getTreeItem(element: FilterItem): vscode.TreeItem {
         return element;
@@ -14,9 +14,20 @@ export class FilterTreeViewProvider implements vscode.TreeDataProvider<FilterIte
     //getChildren() returns the root elements (all the filters)
     getChildren(element?: FilterItem): FilterItem[] {
         if (element) {
-            return [];
+            var filterNode=element.filterNode;
+            if(!filterNode.children||filterNode.children.length===0){
+                return [];
+            }else{
+                return filterNode.children.map(child=>new FilterItem(child));
+            }
+          
         } else { // root
-            return this.filterArr.map(filter => new FilterItem(filter));
+            if(this.root.children){
+                return this.root.children.map(child=>new FilterItem(child));
+            }else{
+                return [];
+            }
+           
         }
     }
 
@@ -33,27 +44,39 @@ export class FilterTreeViewProvider implements vscode.TreeDataProvider<FilterIte
 export class FilterItem extends vscode.TreeItem {
 
     constructor(
-        filter: Filter,
+        public filterNode: FilterNode
     ) {
-        super(filter.regex.toString());
-        this.label = filter.regex.toString();
-        this.id = filter.id;
-        this.iconPath = filter.iconPath;
-        
+        super(filterNode.regex!.toString());
+       if(this.filterNode.isGroup){
+           this.collapsibleState=vscode.TreeItemCollapsibleState.Expanded;
 
-        if (filter.isShown) {
-            this.contextValue='shown';
+       }else{
+        this.collapsibleState=vscode.TreeItemCollapsibleState.None;
+       }
         
+        this.label = filterNode.regex!.source;
+        this.iconPath = filterNode.iconPath;
+        if(filterNode.isGroup){
+            this.contextValue='group';
+        }else{
+            if (filterNode.isShown) {
+                this.contextValue='shown';
             
-        } else {
-            this.contextValue='hiden';
-          
+                
+            } else {
+                this.contextValue='hiden';
+              
+            }
+
         }
+
+       
         console.log("filter state change to :"+this.contextValue);
           
     }
 
 
     //contextValue connects to package.json>menus>view/item/context
-   contextValue: 'shown' | 'hiden' ;
+   contextValue: 'shown' | 'hiden'|'group' ;
 }
+

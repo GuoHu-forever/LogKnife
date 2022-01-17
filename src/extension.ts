@@ -1,8 +1,8 @@
 
 import * as vscode from 'vscode';
-import { FilterTreeViewProvider } from "./filterTreeViewProvider";
-import { Filter, cleanUpIconFiles,getActiveDocument} from "./utils";
-import {deleteFilter, setShownOrHiden,importFilters, exportFilters, addFilter, editFilter, editColor,refresFilterTreeView } from "./filterCommands";
+import { FilterTreeViewProvider,FilterItem } from "./filterTreeViewProvider";
+import { flattenFilterNode,cleanUpIconFiles,getActiveDocument, FilterNode} from "./utils";
+import {moveUpOrDown,editFilterGroup,addFilterGroup, setShownOrHiden,importFilters, exportFilters, addFilter, editFilter, deleteFilter,editColor,refresFilterTreeView } from "./filterCommands";
 import {SearchWebViewProvider} from "./searchWebViewProvider";
 import * as Process from 'child_process';
 import {LargeFileSystemProvider} from './LargeFileSystemProvider';
@@ -13,9 +13,10 @@ let storageUri: vscode.Uri;
 import { VSColorPicker } from './debug';
 
 export type State = {
-    filterArr: Filter[];
+    filterRoot: FilterNode;
     filterTreeViewProvider: FilterTreeViewProvider;
     storageUri: vscode.Uri; 
+    searchWebviewProvider?:SearchWebViewProvider;
 };
 export function activate(context: vscode.ExtensionContext) {
 
@@ -25,13 +26,20 @@ export function activate(context: vscode.ExtensionContext) {
 
         
     //internal globals
-    const filterArr: Filter[] = []; 
+    const root:FilterNode={
+        isGroup:true,
+        isShown:true,
+        id:0,
+        children:[],
+        regex:new RegExp("log-knife-root")
+    };
 	//global variable so you can visit it everywhere
     const state: State = {
-        filterArr,
-        filterTreeViewProvider: new FilterTreeViewProvider(filterArr),
+        filterRoot:root,
+        filterTreeViewProvider: new FilterTreeViewProvider(root),
         storageUri
     };
+    
     if(!context.globalState.get("state")){
         console.log("state is null");
         
@@ -50,48 +58,105 @@ export function activate(context: vscode.ExtensionContext) {
         canSelectMany:true
     });
   
-    let disposableExport = vscode.commands.registerCommand(
-        "log-knife.exportFilters", 
-        () => exportFilters(state));
-    context.subscriptions.push(disposableExport);
-
-    let disposableImport = vscode.commands.registerCommand(
-        "log-knife.importFilters", 
-        () => importFilters(state));
-    context.subscriptions.push(disposableImport);
-
+  
     
-	let disposibleAddFilter = vscode.commands.registerCommand(
+   //import and export --------------------------------------------
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "log-knife.exportAllFilters", 
+        () => exportFilters(state.filterRoot)));
+    
+    
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "log-knife.exportFilters", 
+        (filterTreeItem: vscode.TreeItem) => exportFilters(
+            (<FilterItem>filterTreeItem).filterNode)
+        )
+    );
+  
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "log-knife.importAllFilters", 
+        (filterTreeItem: vscode.TreeItem) => importFilters(state,state.filterRoot)));
+
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "log-knife.importFilters", 
+        (filterTreeItem: vscode.TreeItem) => importFilters(state,(<FilterItem>filterTreeItem).filterNode)));
+    
+    
+    //add/edit/delete fitlers--------------------------------------------
+    
+    context.subscriptions.push(vscode.commands.registerCommand(
         "log-knife.addFilter",
         () => addFilter(state)
+    ));
+  
+    
+	let disposibleAddFilter = vscode.commands.registerCommand(
+        "log-knife.addFilterInGroup",
+        (item) => addFilter(state,item)
     );
     context.subscriptions.push(disposibleAddFilter);
 
 
-
     let disposibleEditFilter = vscode.commands.registerCommand(
         "log-knife.editFilter",                
-        (filterTreeItem: vscode.TreeItem) => editFilter(filterTreeItem, state)
+        (filterTreeItem: vscode.TreeItem) => editFilter(state,<FilterItem>filterTreeItem)
     );
     context.subscriptions.push(disposibleEditFilter);
 
     let disposibleDeleteFilter = vscode.commands.registerCommand(
         "log-knife.deleteFilter",
-        (filterTreeItem: vscode.TreeItem) => deleteFilter(filterTreeItem, state)
+        (filterTreeItem: vscode.TreeItem) => deleteFilter(state,(<FilterItem>filterTreeItem).filterNode)
     );
     context.subscriptions.push(disposibleDeleteFilter);
+   
+    //add edit remove group-----------------------------
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "log-knife.addFilterGroup",
+        (item) => addFilterGroup(state,item)
+    ));
+   
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "log-knife.editFilterGroup",                
+        (filterTreeItem: vscode.TreeItem) => editFilterGroup(state,<FilterItem>filterTreeItem)
+    ));
+    
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "log-knife.deleteFilterGroup",
+        (filterTreeItem: vscode.TreeItem) => deleteFilter(state,(<FilterItem>filterTreeItem).filterNode)
+    ));
 
-    let disposibleEnableHighlight = vscode.commands.registerCommand(
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "log-knife.deleteAllFilter",
+        (filterTreeItem: vscode.TreeItem,filterTreeItem2: vscode.TreeItem) => deleteFilter(state,state.filterRoot)
+    ));
+   
+   
+    
+
+ 
+
+    //enable or disable filter------------------------------------------------
+    
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "log-knife.enableAllFilter",
+        (filterTreeItem: vscode.TreeItem) => setShownOrHiden(true, state,state.filterRoot)
+    ));
+    context.subscriptions.push(vscode.commands.registerCommand(
         "log-knife.enableFilter",
-        (filterTreeItem: vscode.TreeItem) => setShownOrHiden(true, filterTreeItem, state)
-    );
-    context.subscriptions.push(disposibleEnableHighlight);
+        (filterTreeItem: vscode.TreeItem) => setShownOrHiden(true, state,(<FilterItem>filterTreeItem).filterNode)
+    ));
 
-    let disposibleDisableHighlight = vscode.commands.registerCommand(
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "log-knife.disableAllFilter",
+        (filterTreeItem: vscode.TreeItem) => setShownOrHiden(false,  state,state.filterRoot)
+        ));
+    context.subscriptions.push(vscode.commands.registerCommand(
         "log-knife.disableFilter",
-        (filterTreeItem: vscode.TreeItem) => setShownOrHiden(false, filterTreeItem, state)
-    );
-	context.subscriptions.push(disposibleDisableHighlight);
+        (filterTreeItem: vscode.TreeItem) => setShownOrHiden(false, state,(<FilterItem>filterTreeItem).filterNode)
+    ));
+
+
+   //edit color------------------
     
     let disposibleEditColor = vscode.commands.registerCommand(
         "log-knife.editColor",
@@ -108,7 +173,7 @@ export function activate(context: vscode.ExtensionContext) {
                     else{
                         console.log("颜色选取成功"+stdout);
                          var color=stdout;
-                        editColor(filterTreeItem, state, color as string);
+                        editColor(color as string,state,<FilterItem>filterTreeItem);
                         
                     }
                 }else{
@@ -123,15 +188,27 @@ export function activate(context: vscode.ExtensionContext) {
     );
 	context.subscriptions.push(disposibleEditColor);
    
+//refresh treeView-------------------------------------------------------
+context.subscriptions.push(vscode.commands.registerCommand(
+    "log-knife.refresFilterTreeView",
+    () => refresFilterTreeView(state)
+));
 
-
-
+context.subscriptions.push(vscode.commands.registerCommand(
+    "log-knife.moveUp",
+    () => moveUpOrDown(state,treeView,true)
+));
+context.subscriptions.push(vscode.commands.registerCommand(
+    "log-knife.moveDown",
+    () => moveUpOrDown(state,treeView,false)
+));
 /*Search of fiters into Log and display on the panel start-----------------------------------
   this section is responsible for searching with regex and displaying with webview
 */
 
     
 const provider = new SearchWebViewProvider(context.extensionUri);
+state.searchWebviewProvider=provider;
 
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider('searchWebView', provider,{
@@ -150,7 +227,8 @@ const provider = new SearchWebViewProvider(context.extensionUri);
 	           return ;
              }
             doc=doc as vscode.TextDocument;
-			provider.webViewSearchFilters(doc,state.filterArr);
+            var filters=flattenFilterNode(state.filterRoot);
+			provider.webViewSearchFilters(doc,filters);
 		}));
 
 //Break large file limit----------------------------------------------------------------------------------

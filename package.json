@@ -21,6 +21,22 @@
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
+      
+      {
+        "command": "log-knife.moveUp",
+        "title": "move up",
+        "icon": "$(arrow-up)"
+      },
+      {
+        "command": "log-knife.moveDown",
+        "title": "move up",
+        "icon": "$(arrow-down)"
+      },
+      {
+        "command": "log-knife.refresFilterTreeView",
+        "title": "refresh",
+        "icon": "$(refresh)"
+      },
       {
         "command": "log-knife.enableFilter",
         "title": "Enable Filter",
@@ -32,23 +48,77 @@
         "icon": "$(eye-closed)"
       },
       {
-        "command": "log-knife.deleteFilter",
-        "title": "Delete This Filter",
-        "icon": "$(dialog-close)"
+        "command": "log-knife.enableAllFilter",
+        "title": "enable all Filter",
+        "icon": "$(eye)"
       },
       {
-        "command": "log-knife.editFilter",
-        "title": "Edit Regex for This Filter",
-        "icon": "$(edit)"
+        "command": "log-knife.disableAllFilter",
+        "title": "Disable all Filter",
+        "icon": "$(eye-closed)"
       },
+
+      {
+        "command": "log-knife.deleteAllFilter",
+        "title": "Delete ",
+        "icon": "$(close)"
+        
+      },
+      
       {
         "command": "log-knife.addFilter",
         "title": "Add a Filter",
-        "icon": "$(plus)"
+        "icon": "$(new-file)"
       },
+      {
+        "command": "log-knife.deleteFilter",
+        "title": "Delete ",
+        "icon": "$(close)"
+      },
+      {
+        "command": "log-knife.editFilter",
+        "title": "Edit",
+        "icon": "$(edit)"
+      },
+    
+      {
+        
+        "command": "log-knife.addFilterInGroup",
+        "title": "Add a Filter",
+        "icon": "$(new-file)"
+      },
+      {
+
+        "command":  "log-knife.addFilterGroup",
+        "title": "add a group",
+        "icon": "$(window)"
+      },
+      {
+        "command": "log-knife.deleteFilterGroup",
+        "title": "delete",
+        "icon": "$(close)"
+      },
+      {
+
+        "command":  "log-knife.editFilterGroup",
+        "title": "edit",
+        "icon": "$(pencil)"
+      },
+     
+      {
+        
+        "command": "log-knife.exportAllFilters",
+        "title": "Export All Filters"
+      },
+      
       {
         "command": "log-knife.exportFilters",
         "title": "Export Filters"
+      },
+      {
+    
+        "command": "log-knife.importAllFilters",
+        "title": "Import Filters"
       },
       {
         "command": "log-knife.importFilters",
@@ -83,41 +153,72 @@
     "menus": {
       "view/item/context": [
         {
-          "command": "log-knife.editFilter",
-          "when": "view == log-knife-view",
-          "group": "inline@1"
-        },
-        {
           "command": "log-knife.disableFilter",
           "when": "view == log-knife-view && viewItem==shown",
-          "group": "inline@2"
+          "group": "inline@0"
         },
         {
           "command": "log-knife.enableFilter",
           "when": "view == log-knife-view && viewItem ==hiden",
-          "group": "inline@3"
+          "group": "inline@0"
+        },
+
+        {
+          "command": "log-knife.disableFilter",
+          "when": "view == log-knife-view&& viewItem==group"
+        
+        },
+        {
+          "command": "log-knife.enableFilter",
+          "when": "view == log-knife-view && viewItem==group"
+        
+        },
+
+
+       
+        {
+          "command": "log-knife.addFilterInGroup",
+          "when": "view == log-knife-view&& viewItem==group",
+          "group": "inline@1"
+        },
+        {
+          "command": "log-knife.addFilterGroup",
+          "when": "view == log-knife-view&& viewItem==group",
+          "group": "inline@2"
+         
+        },
+        {
+          "command": "log-knife.deleteFilterGroup",
+          "when": "view == log-knife-view&& viewItem==group",
+          "group": "group1"
+        },
+        {
+          "command": "log-knife.editFilterGroup",
+          "when": "view == log-knife-view&& viewItem==group",
+          "group": "group1"
+        },
+       
+        
+        {
+          "command": "log-knife.editColor",
+          "when": "view==log-knife-view&& viewItem!=group",
+          "group": "inline@1"
         },
         {
           "command": "log-knife.deleteFilter",
-          "when": "view == log-knife-view",
-          "group": "inline@6"
+          "when": "view == log-knife-view&& viewItem!=group"
+          
         },
         {
-          "command": "log-knife.editColor",
-          "when": "view==log-knife-view",
-          "group": "inline@0"
-        }
-      ],
-      "view/title": [
-        {
-          "command": "log-knife.addFilter",
-          "when": "view == log-knife-view",
-          "group": "navigation"
+          "command": "log-knife.editFilter",
+          "when": "view == log-knife-view&& viewItem!=group"
+      
+         
         },
-        {
-          "command": "log-knife.openLargeFile",
-          "when": "view==log-knife-view"
-        },
+       
+       
+      
+     
         {
           "command": "log-knife.importFilters",
           "when": "view == log-knife-view"
@@ -125,9 +226,71 @@
         {
           "command": "log-knife.exportFilters",
           "when": "view == log-knife-view"
+        }
+      ],
+      "view/title": [
+        
+        {
+          "command": "log-knife.disableAllFilter",
+          "when": "view == log-knife-view",
+          "group":"group1" 
+         
+        },
+        {
+          "command": "log-knife.enableAllFilter",
+          "when": "view == log-knife-view",
+          "group":"group1" 
+        },
+        {
+          "command": "log-knife.addFilterGroup",
+          "when": "view == log-knife-view",
+          "group": "navigation"
+         
+        },
+        {
+          "command": "log-knife.addFilter",
+          "when": "view == log-knife-view",
+          "group": "navigation"
+        },
+        {
+       
+          "command": "log-knife.refresFilterTreeView",
+          "when": "view == log-knife-view",
+          "group": "navigation"
+        },
+        {
+          "command": "log-knife.deleteAllFilter",
+          "when": "view == log-knife-view",
+          "group": "group2"
+          
+        },
+        {
+          "command": "log-knife.openLargeFile",
+          "when": "view==log-knife-view",
+          "group": "group4"
+        },
+        {
+          "command": "log-knife.importAllFilters",
+          "when": "view == log-knife-view",
+          "group": "group3"
+        },
+        {
+          "command": "log-knife.exportAllFilters",
+          "when": "view == log-knife-view",
+          "group": "group3"
         },
         {
           "command": "log-knife.searchWebView",
+          "when": "view == log-knife-view",
+          "group": "navigation"
+        },
+        {
+          "command": "log-knife.moveUp",
+          "when": "view == log-knife-view",
+          "group": "navigation"
+        },
+        {
+          "command": "log-knife.moveDown",
           "when": "view == log-knife-view",
           "group": "navigation"
         },
@@ -136,6 +299,7 @@
           "when": "view == searchWebView",
           "group": "navigation"
         }
+       
       ]
     },
     "viewsContainers": {
