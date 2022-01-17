@@ -63,6 +63,15 @@ export class SearchWebViewProvider implements vscode.WebviewViewProvider {
 				
 				<title>Log Knife</title>
 				<style>
+				body.vscode-light {
+					color: black;
+				  }
+				  body.vscode-dark {
+					color: red;
+				  }
+				  body.vscode-high-contrast {
+					color: red;
+				  }
 					*{
 						font-family:-moz-fixed;
 						white-space:pre;
@@ -70,18 +79,7 @@ export class SearchWebViewProvider implements vscode.WebviewViewProvider {
 						font-size:14px;
 
 					} 
-					.searchContainer {
-						position:fixed;
-						background-color: white;
-						top:0px;
-						left:0px;
-						right:0px;
-						height: 30px;
-						width: 100%;
-						margin: auto auto 0 auto;
-						 /*border: rgb(158, 16, 16) solid 2px;*/ 
-						text-align: center;
-					}
+		
 			
 					.search {
 						position:fixed;
@@ -94,6 +92,7 @@ export class SearchWebViewProvider implements vscode.WebviewViewProvider {
 						outline: none;
 						border: 1px solid #ccc;
 						padding-left: 40px;
+				
 						margin: auto auto 0 auto;
 					}
 			
@@ -101,9 +100,9 @@ export class SearchWebViewProvider implements vscode.WebviewViewProvider {
 				  </style>       
 			</head>
 			<body>
-			      <div class="searchContainer">
+	
 		             	<input type="text"  id="search" class="search" placeholder="搜索"/>
-		          </div>
+		  
 
 				  <div  id="container" class="container"> 
 			
