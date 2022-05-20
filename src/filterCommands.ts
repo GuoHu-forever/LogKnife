@@ -103,14 +103,16 @@ export function addFilter(state:State,treeItem?: FilterItem) {
 }
 
 export function editFilter(state:State,treeItem: FilterItem) {
+    var filterNode=treeItem.filterNode;
+    var oldStr=filterNode.regex?.source;
     vscode.window.showInputBox({
         prompt: "Type a new regex",
+        value:oldStr,
         ignoreFocusOut: false
     }).then(regexStr => {
         if (regexStr === undefined) {
             return;
         }
-        var filterNode=treeItem.filterNode;
         filterNode.regex=new RegExp(regexStr);
         refresFilterTreeView(state);
     });

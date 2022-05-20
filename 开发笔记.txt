@@ -1,0 +1,16 @@
+Activating extension 'guohu.log-knife' failed: Cannot find module 'e:\VScodePluginLearning\LogKnife\out\extension.js'
+Require stack:
+- d:\software\vscode\Microsoft VS Code\resources\app\out\vs\loader.js
+- d:\software\vscode\Microsoft VS Code\resources\app\out\bootstrap-amd.js
+- d:\software\vscode\Microsoft VS Code\resources\app\out\bootstrap-fork.js.
+在执行npm install --save后,修复了上述问题，但是出现了下列问题，是因为了使用国际化包要提供这个文件，把国际化包删了就行
+Activating extension 'guohu.log-knife' failed: ENOENT: no such file or directory, open 'D:\software\vscode\Microsoft VS Code\package.nls.json'.
+赋值文件到该目录解决问题
+4- d:\software\vscode\Microsoft VS Code\resources\app\out\bootstrap-amd.js
+5- d:\software\vscode\Microsoft VS Code\resources\app\out\bootstrap-fork.js.
+8赋值文件到该目录解决问题    3                                        fdf
+
+1.0.2 没问题，搜索“a”不会卡死，但是没有定义红橙黄绿青蓝紫颜色
+
+1.1.0 增加了编辑器颜色渲染功能
+1.1.1 保存filter时转到文档

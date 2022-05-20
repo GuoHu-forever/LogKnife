@@ -125,18 +125,19 @@ export class SearchWebViewProvider implements vscode.WebviewViewProvider {
 				  color: white;
 			}
 				
-				  </style>       
+			</style>
+			       
 			</head>
 			<body>
 					<div style="position: fixed; left: 20px; top: 0; width: 100%; opacity:1">
-					<input type="text" id="search" class="search" placeholder="搜索" />
-					<select>
-						<option class="select" value="volvo">filter</option>
-						<option class="select" value="saab">find</option>
-					</select>
-					<input type="button" class="button" value="下一个" onclick="next()" />
-					<input type="button" class="button" value="上一个" onclick="previous()" />
-				  </div>
+						<input type="text" id="search" class="search" placeholder="搜索" />
+						<select>
+							<option class="select" value="volvo">filter</option>
+							<option class="select" value="saab">find</option>
+						</select>
+						<input type="button" class="button" value="下一个" onclick="next()" />
+						<input type="button" class="button" value="上一个" onclick="previous()" />
+				  	</div>
 
 				  <div  id="container" class="container"> 
 			
